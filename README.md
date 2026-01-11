@@ -3,7 +3,7 @@
 <img src="https://raw.githubusercontent.com/neon-aiart/meshi-art-maker/main/meshi_maker_20251101_235534.png" style="height: 200px; width: 200px; object-fit: contain;" align="right" alt="Meshi Art Sample" />
 
 このアプリケーションは、**GoogleのGemini Canvas環境**専用の、究極の「飯テロ」画像生成補助アプリです。  
-最新のAIモデル（**Imagen 3.0** & **Gemini 2.5 Flash**）を駆使し、見る者の食欲を限界まで刺激する高品質な料理イラストに加え、臨場感あふれる食レポや献立アイデアを生成できます。  
+AIモデル（**Imagen 3.0** & **Gemini 2.5 Flash**）を駆使し、見る者の食欲を限界まで刺激する高品質な料理イラストに加え、臨場感あふれる食レポや献立アイデアを生成できます。  
 
 This application is an ultimate "Appetite-Stimulating" image generation aid specifically designed for the **Google Gemini Canvas environment**.  
 Leveraging the latest AI models (**Imagen 3.0** & **Gemini 2.5 Flash**), it can generate high-quality food illustrations that push the viewer's appetite to the limit, along with immersive food reviews and meal planning ideas.  
