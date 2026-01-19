@@ -1,4 +1,4 @@
-# 🍽️ 飯テロメーカー (Meshi Art Maker) v19.6
+# 🍽️ 飯テロメーカー (Meshi Aiart Maker) v19.7
 
 <img src="https://raw.githubusercontent.com/neon-aiart/meshi-art-maker/main/meshi_maker_20251101_235534.png" style="height: 200px; width: 200px; object-fit: contain;" align="right" alt="Meshi Art Sample" />
 
@@ -19,8 +19,11 @@ Leveraging the AI models (**Imagen 3.0** & **Gemini 2.5 Flash**), it can generat
      The AI deeply understands the entered dish and automatically translates and expands it into high-definition English prompts that maximize the performance of Imagen 3.0.
 
 2. 👩🏻‍🍳 **シェフの気まぐれメニュー / Chef's Special Menu**:
-   * 「今日は何の日？」や季節のトレンドをAIが自動で分析し、その日にぴったりの料理を提案します。献立に迷う必要はありません。  
-     AI automatically analyzes "today's anniversaries" and seasonal trends to suggest the perfect dish for the day. You'll never have to worry about what to eat again.
+   * 「今日は何の日？」や季節・トレンドをAIが分析し、その日にぴったりの料理を【3種類】提案します。
+   * **こだわり選択**: 提案された3つのメニューから、今の気分にぴったりの一皿を自分でチョイス。
+   * **おまかせ全自動**: チェックボックスをオンにすれば、シェフが最高の一皿をランダムで選び、そのまま画像生成までノンストップで実行します。  
+     AI automatically analyzes "today's anniversaries," seasons, and trends to suggest 【3 different】 perfect dishes.  
+     Choose your favorite from the chef's recommendations, or enable "Full Auto" to let the chef pick and generate the image instantly.
 
 3. 📝 **温度感のある食レポ＆インスピレーション献立 / Emotive Food Reviews & Inspired Meal Planning**:
    * AI特有の定型文を排除し、一口ごとに溢れる「本音の独り言」のようなリアルな食レポを生成。さらに、画像からインスピレーションを得た献立アイデアも提案します。  
@@ -41,7 +44,7 @@ Leveraging the AI models (**Imagen 3.0** & **Gemini 2.5 Flash**), it can generat
 以下のリンクから、Gemini Canvas環境で直接アプリをご利用ください。  
 Please use the app directly in the Gemini Canvas environment via the link below.
 
-**[🍴 飯テロメーカーを試す / Try Meshi Art Maker 🍴](https://gemini.google.com/share/c9467688120b)**
+**[🍴 飯テロメーカーを試す / Try Meshi Art Maker 🍴](https://gemini.google.com/share/e2f2c5d2fb50)**
 
 ### ⚠️ 動作環境 / Environment & Benefits
 
@@ -106,9 +109,15 @@ An overview of the core prompt design and control logic of this application.
 
 ## 📝 更新履歴
 
-### v19.6 (Current Release)
-* ✅ 👩🏻‍🍳 シェフの気まぐれメニュー: "本日の記念日" "季節の彩り" "最近のトレンド" 実装
+### v19.7 (Current Release)
+* ☑️ 上に戻るボタンを追加
+* ✅ 拡大表示ボタンを追加
+* ☑️ プロンプトを少し変更（「あぁ、たまらん」など削除）
+* ✅ 👩🏻‍🍳３種類の提案メニューとおまかせボタンを追加
+
+### v19.6
 * ✨ Initial release on GitHub
+* ✅ 👩🏻‍🍳 シェフの気まぐれメニュー: "本日の記念日" "季節の彩り" "最近のトレンド" 実装
 
 ### v19.5
 * ✅ 食レポ改善: オーバーリアクション、テンプレート感、淡々としてる文章からの脱却
