@@ -8,6 +8,8 @@ AIモデル（**Imagen 3.0** & **Gemini 2.5 Flash**）を駆使し、見る者�
 This application is an ultimate "Appetite-Stimulating" image generation aid specifically designed for the **Google Gemini Canvas environment**.  
 Leveraging the AI models (**Imagen 3.0** & **Gemini 2.5 Flash**), it can generate high-quality food illustrations that push the viewer's appetite to the limit, along with immersive food reviews and meal planning ideas.  
 
+⭐ スターをポチッとお願いします✨ (Please hit the [Star] button!)
+
 <br clear="right">
 
 ---
