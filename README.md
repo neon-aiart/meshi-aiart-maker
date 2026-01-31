@@ -8,7 +8,7 @@ AIモデル（**Imagen 3.0** & **Gemini 2.5 Flash**）を駆使し、見る者�
 This application is an ultimate "Appetite-Stimulating" image generation aid specifically designed for the **Google Gemini Canvas environment**.  
 Leveraging the AI models (**Imagen 3.0** & **Gemini 2.5 Flash**), it can generate high-quality food illustrations that push the viewer's appetite to the limit, along with immersive food reviews and meal planning ideas.  
 
-⭐ スターをポチッとお願いします✨ (Please hit the [Star] button!)  
+⭐ [スター](https://github.com/neon-aiart/meshi-art-maker/)をポチッとお願いします✨ (Please hit the [Star] button!)  
 
 <br clear="right">  
 
@@ -33,7 +33,7 @@ Leveraging the AI models (**Imagen 3.0** & **Gemini 2.5 Flash**), it can generat
 
 4. 🚀 **５回リトライによる文字数厳密化 / Strict Word Count via 5-step Retry**:  
    * AIの出力文字数を常に監視。指定した文字数（食レポの長さなど）に満たない場合は最大５回まで自動でリトライし、理想のボリュームを維持します。  
-     Constantly monitors the AI output length. If it doesn't meet the specified word count, it automatically retries up to 3 times to maintain the ideal volume.  
+     Constantly monitors the AI output length. If it doesn't meet the specified word count, it automatically retries up to 5 times to maintain the ideal volume.  
 
 5. 🗾 **４種の方言に翻訳＆ギャル文字に変換 / Translation into 4 Dialects & Gyaru-moji Conversion**:  
    * 生成されたテキストを「関西弁・博多弁・津軽弁・沖縄弁」に翻訳、および「ギャル文字」へ瞬時に変換。SNS投稿をより楽しく彩ります。  
