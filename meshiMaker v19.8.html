@@ -182,6 +182,7 @@
             /* ボタンが重ならないように上のパディングを調整 */
             padding-top: 4rem;
         }
+
         /* ツールチップのスタイル */
         .tooltip {
             position: relative;
@@ -189,46 +190,117 @@
         }
         .tooltip .tooltiptext {
             visibility: hidden;
-            background-color: #555;
             color: #fff;
-            text-align: center;
-            border-radius: 6px;
-            padding: 5px 10px;
+            border-radius: 8px;
+            padding: 10px;
             position: absolute;
             z-index: 10;
-            top: 150%;
-            left: 50%;
             opacity: 0;
-            transition: opacity 0.3s;
-            font-size: 0.8rem;
-            font-weight: 400;
+            font-size: 13px;
+            line-height: 1.5;
+            width: max-content;
+            pointer-events: auto; /* コピーできるようにマウス反応あり */
+            -webkit-user-select: text;
+            user-select: text;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
+            transform: translateY(10px); /* 最初は少し下に下げておく（ふわっと演出） */
         }
-        .tooltip .tooltiptext.info-tooltip {
-            width: 420px;
-            margin-left: -240px;
-        }
-        .tooltip .tooltiptext.action-tooltip {
-            width: auto;
-            white-space: nowrap;
-            right: 0;        /* 右端を親要素に合わせる */
-            left: auto;      /* leftの指定を解除 */
-            transform: none; /* transformを解除 */
-        }
-        .tooltip .tooltiptext::after {
-            content: "";
-            position: absolute;
-            bottom: 100%;
-            margin-left: -5px;
-            border-width: 5px;
-            border-style: solid;
-            border-color: transparent transparent #555 transparent;
-            right: auto;     /* 右からの位置を指定 */
-            left: 240px;     /* leftの指定を解除 */
-        }
+        /* ホバーで表示（共通設定） */
         .tooltip:hover .tooltiptext {
             visibility: visible;
             opacity: 1;
+            transform: translateY(0); /* ホバー時に元の位置に戻す */
         }
+
+        /* info と action */
+        .tooltip .tooltiptext.info-tooltip,
+        .tooltip .tooltiptext.action-tooltip {
+            top: 120%; /* 親要素の下に出す */
+            white-space: normal;
+        }
+        /* action と prompt */
+        .tooltip .tooltiptext.action-tooltip,
+        .tooltip .tooltiptext.prompt-tooltip {
+            max-width: 320px;
+            background-color: #555E;
+        }
+        /* info と prompt */
+        .tooltip .tooltiptext.info-tooltip,
+        .tooltip .tooltiptext.prompt-tooltip {
+            text-align: left;
+            max-height: 480px;
+            overflow-y: auto;
+            word-break: break-word;
+        }
+        /* 個別の微調整 */
+        .tooltip .tooltiptext.info-tooltip {
+            background-color: #324E;
+            width: 420px;
+            left: 50%;
+            transform: translateX(-60%)
+        }
+        .tooltip .tooltiptext.action-tooltip {
+            text-align: center;
+            white-space: nowrap;
+            right: -5px;
+        }
+        .tooltip .tooltiptext.prompt-tooltip {
+            bottom: 120%; /* topではなくbottomを使って上に押し上げる */
+            right: -30px;
+            white-space: pre-wrap;
+            width: max-content;
+        }
+
+        /* 三角形（矢印）の設定 */
+        .tooltip::after {
+            content: "";
+            position: absolute;
+            z-index: 11;
+            visibility: hidden;
+            opacity: 0;
+            border-style: solid;
+            border-width: 6px;
+            transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
+            transform: translateY(10px);
+        }
+        .tooltip:hover::after {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* 個別の設定 */
+        .tooltip:has(.info-tooltip)::after {
+            top: 120%;
+            margin-top: -12px;
+            left: 50%;
+            transform: translateX(-50%) translateY(10px);
+            border-color: transparent transparent #324E transparent;
+        }
+        .tooltip:hover:has(.info-tooltip)::after {
+            transform: translateX(-50%) translateY(0);
+        }
+        .tooltip:has(.action-tooltip)::after {
+            top: 120%;
+            margin-top: -12px;
+            left: 50%;
+            transform: translateX(-50%) translateY(10px);
+            border-color: transparent transparent #555E transparent;
+        }
+        .tooltip:hover:has(.action-tooltip)::after {
+            transform: translateX(-50%) translateY(0);
+        }
+        .tooltip:has(.prompt-tooltip)::after {
+            bottom: 120%;
+            margin-bottom: -12px;
+            right: 13px;
+            transform: translateY(10px);
+            border-color: #555E transparent transparent transparent;
+        }
+        .tooltip:hover:has(.prompt-tooltip)::after {
+            transform: translateY(0);
+        }
+
         /* 無効化されたボタンのスタイル */
         .llm-button:disabled {
             background-color: #4a4a4a !important;
@@ -264,7 +336,7 @@
                 <span id="app-version" class="text-lg text-gray-400"></span>
                 <div class="tooltip">
                     <span class="material-icons text-gray-400 cursor-pointer text-2xl">info</span>
-                    <span class="tooltiptext info-tooltip" style="text-align: left; padding: 10px; white-space: normal; line-height: 1.6;">
+                    <span class="tooltiptext info-tooltip">
                         <b>✨使い方✨</b><br>
                         1. 食欲をそそられる料理名を入力します。<br>
                         2. スタイル（初期値：フードブログ風）や背景（空欄は明るいカフェ）を指定すると、より凝った画像が生成されやすくなります。<br>
@@ -276,7 +348,7 @@
                 </div>
                 <div class="tooltip">
                     <span class="material-icons text-gray-400 cursor-pointer text-2xl">copyright</span>
-                    <span class="tooltiptext info-tooltip" style="text-align: left; padding: 10px; white-space: normal; line-height: 1.6;">
+                    <span class="tooltiptext info-tooltip">
                         <h3 class="text-lg font-bold mb-2 text-white text-left">著作権情報 / Copyright</h3>
                         <div class="text-gray-300 text-left text-sm">
                             <p class="font-bold">Copyright (c) 2025-2026 ねおん (Neon)</p>
@@ -336,7 +408,7 @@
                 <input type="text" id="backgroundInput" placeholder="背景や雰囲気 （例: 夜景、高級レストラン、明るいカフェ）" autocomplete="off" class="text-input w-full bg-gray-700 p-3 rounded-full text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-amber-500">
             </div>
             <!-- シェフの気まぐれメニュー -->
-            <span class="inline-flex items-center">👩🏻‍🍳 シェフの気まぐれメニュー: &nbsp; <input type="checkbox" id="chefMoodCheckbox" aria-label="chefMoodCheckbox" checked> &nbsp; おまかせ</span>
+            <span class="inline-flex items-center">👩🏻‍🍳 シェフの気まぐれメニュー: &nbsp; <input type="checkbox" id="chefMoodCheckbox" aria-label="chefMoodCheckbox"> &nbsp; おまかせ</span>
             <div class="flex flex-row text-sm space-x-2 justify-center">
                 <button id="todaySpecialBtn" class="bg-fuchsia-400 hover:bg-fuchsia-500 text-white font-semibold py-2 px-4 rounded-full shadow-lg transform transition-transform duration-200 hover:scale-105 disabled:bg-gray-500 disabled:cursor-not-allowed">
                     📅 本日の記念日
@@ -430,7 +502,7 @@
                     <button id="promptCopyBtn" class="w-10 h-10 rounded-full text-gray-400 hover:bg-gray-700 transition-colors">
                         <span class="material-icons text-lg">article</span>
                     </button>
-                    <span class="tooltiptext action-tooltip">プロンプトコピー</span>
+                    <span id="promptText" class="tooltiptext prompt-tooltip">プロンプトコピー</span>
                 </div>
             </div>
 
@@ -497,7 +569,7 @@
 
     <script type="module">
         /* Copyright (c) 2025-2026 ねおん / Licensed under PolyForm Noncommercial 1.0.0 (https://polyformproject.org/licenses/noncommercial/1.0.0/) */
-        const APP_VERSION = '19.7';
+        const APP_VERSION = '19.8';
 
         // Firebaseライブラリをインポート
         import { getAuth, onAuthStateChanged, } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
@@ -530,6 +602,7 @@
         const copyBtn = document.getElementById('copyBtn');
         const textLoadingIndicator = document.getElementById('textLoadingIndicator');
         const promptCopyBtn = document.getElementById('promptCopyBtn');
+        const promptText = document.getElementById('promptText');
         const copyBtnTooltip = document.getElementById('copyBtnTooltip');
         const galmojiToggleBtn = document.getElementById('galmojiToggleBtn');
         const kansaiToggleBtn = document.getElementById('kansaiToggleBtn');
@@ -581,7 +654,6 @@
         let toastTimeoutId = null;      // トースト表示のタイマー管理
         let copyTimer = null;           // アイコン復元用のタイマー管理
         let originalIconContent = null; // アイコンの原型を保存
-        const canvasAppId = typeof window.__app_id !== 'undefined' ? window.__app_id : 'default-app-id';
         const storage = getStorage(window.app); // window.app が Firebase の初期化インスタンスと仮定
 
         // --- Firebase認証 ---
@@ -607,7 +679,7 @@
          * @param {number} maxRetries - 最大リトライ回数
          * @returns {Promise<Response>} fetchのレスポンス
          */
-        const fetchWithRetry = async (fetcher, maxRetries = 3) => {
+        const fetchWithRetry = async (fetcher, maxRetries = 5) => {
             let attempt = 0;
             while (attempt < maxRetries) {
                 try {
@@ -631,7 +703,7 @@
                         throw error; // 最後の特定エラーを投げ直す
                     }
                     // リトライの間隔を徐々に長くする（Exponential Backoff）
-                    const delay = 1000 * Math.pow(2, attempt);
+                    const delay = (Math.pow(2, attempt) * 1000); // + 1000
                     await new Promise(resolve => setTimeout(resolve, delay));
                 }
             }
@@ -777,20 +849,30 @@
                 success = true; // 成功フラグを立てる
 
             } catch (error) {
-                console.error('Image generation failed:', error);
-                let errorMessage = '画像生成に失敗しました。';
-                if (error.message.includes('API認証エラー')) {
-                    errorMessage += 'APIキーの問題、またはサービスが利用できない可能性があります。しばらくしてから再度お試しください。';
+                console.error('詳細エラーログ:', error);
+
+                // どの段階でエラーが起きたか判定
+                const stage = currentImagePrompt ? '【画像生成段階】' : '【プロンプト翻訳段階】';
+                let errorMessage = `画像生成に失敗しました。${stage}`;
+
+                if (error.message.includes('401')) {
+                    errorMessage += ' 認証エラー(401)。一時的な接続切れのようです。再試行してください。';
+                } else if (error.message.includes('429')) {
+                    errorMessage += ' リクエスト過多(429)。少し時間を空けてください。';
                 } else {
-                    errorMessage += `エラー: ${error.message}`;
+                    errorMessage += ` 原因: ${error.message}`;
                 }
-                imageGrid.innerHTML = `<p class="text-red-400 text-center col-span-full py-4">${errorMessage}</p>`;
+
+                imageGrid.innerHTML = `<p class="text-red-400 text-center col-span-full py-4 text-sm">${errorMessage}</p>`;
             } finally {
                 // ローディング表示を終了し、ボタンを再度有効化
                 setGeneratingUIState(false);
                 // 成功した場合のみ、食レポなどの追加機能を表示
                 if (success) {
                     additionalContent.classList.remove('hidden');
+                    if (currentImagePrompt) {
+                        promptText.textContent = currentImagePrompt;
+                    }
                 }
             }
         };
@@ -819,6 +901,9 @@
             // ダウンロード処理の実装
             downloadBtn.addEventListener('click', async (e) => {
                 e.stopPropagation(); // カード選択イベントが発火するのを防ぐ
+                if (!imageCard.classList.contains('selected')) {
+                    imageCard.click();
+                }
 
                 try {
                     // UIフィードバック：一時的に無効化
@@ -1383,9 +1468,9 @@
 
                 出力は必ず以下のJSONフォーマット（配列）のみで行ってください。
                 [
-                  {"food": "料理名1", "background": "背景1"},
-                  {"food": "料理名2", "background": "背景2"},
-                  {"food": "料理名3", "background": "背景3"}
+                    {"food": "料理名1", "background": "背景1"},
+                    {"food": "料理名2", "background": "背景2"},
+                    {"food": "料理名3", "background": "背景3"}
                 ]`;
 
             const payload = {
