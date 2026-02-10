@@ -24,6 +24,11 @@ jobs:
           # -L はリダイレクトを追いかけるオプションよ
           PAGE_CONTENT=$(curl -sL "$LINK_URL")
 
+          curl -sL "$LINK_URL" > temp.html
+          echo "--- START OF HTML ---"
+          cat temp.html
+          echo "--- END OF HTML ---"
+
           # 「neon」という単語が含まれているかチェック
           if echo "$PAGE_CONTENT" | grep -qi "neon"; then
             LINK_ALIVE=true
