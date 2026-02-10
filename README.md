@@ -48,6 +48,9 @@ Please use the app directly in the Gemini Canvas environment via the link below.
 
 **[🍴 飯テロメーカーを試す / Try Meshi Art Maker 🍴](https://gemini.google.com/share/935ca94636c9)**  
 
+<!-- STATUS_START -->
+<!-- STATUS_END -->
+
 ### ⚠️ 動作環境 / Environment & Benefits  
 
 このアプリは、単なる画像生成ツールではありません。  
