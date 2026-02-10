@@ -17,7 +17,8 @@ jobs:
         run: |
           LAST_UPDATE="2026-02-10"
           NEXT_UPDATE=$(date -d "$LAST_UPDATE + 60 days" +%Y-%m-%d)
-          LINK_URL="https://gemini.google.com/share/935ca94636c9"
+          # LINK_URL="https://gemini.google.com/share/935ca94636c9"
+          LINK_URL="https://gemini.google.com/share/bec95c772552"
 
           # ページの中身を取得して、特定のキーワード（例: neon）が含まれているか検索するわ
           # -L はリダイレクトを追いかけるオプションよ
@@ -36,9 +37,9 @@ jobs:
           if [ "$LINK_ALIVE" = false ]; then
             STATUS="🔴 **【リンク切れ検知】** 共有リンクが失効している可能性があります (要確認)  \n最終確認: $CURRENT_DATE"
           elif [ $DIFF -ge 60 ]; then
-            STATUS="共有リンク(share link) 最終更新日(last update): $LAST_UPDATE (**⚠️ $DIFF 日経過 - まもなくリンク切れ**)  \n次回更新予定日(next update): $NEXT_UPDATE"
+            STATUS="🟡 共有リンク(share link) 最終更新日(last update): $LAST_UPDATE (**⚠️ $DIFF 日経過 - まもなくリンク切れ**)  \n次回更新予定日(next update): $NEXT_UPDATE"
           else
-            STATUS="共有リンク(share link) 最終更新日(last update): $LAST_UPDATE ($DIFF 日経過)  \n次回更新予定日(next update): $NEXT_UPDATE"
+            STATUS="🟢 共有リンク(share link) 最終更新日(last update): $LAST_UPDATE ($DIFF 日経過)  \n次回更新予定日(next update): $NEXT_UPDATE"
           fi
 
           # 魔法のsedコマンド（エスケープ版）
