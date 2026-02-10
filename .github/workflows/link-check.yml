@@ -1,4 +1,4 @@
-name: Update README with Link Expiry
+name: Update Readme and Link Check
 
 on:
   schedule:
@@ -33,7 +33,9 @@ jobs:
           CURRENT_DATE=$(date +%Y-%m-%d)
           DIFF=$(( ($(date -d "$CURRENT_DATE" +%s) - $(date -d "$LAST_UPDATE" +%s)) / 86400 ))
 
-          if [ $DIFF -ge 60 ]; then
+          if [ "$LINK_ALIVE" = false ]; then
+            STATUS="🔴 **【リンク切れ検知】** 共有リンクが失効している可能性があります (要確認)\n最終確認: $CURRENT_DATE"
+          elif [ $DIFF -ge 60 ]; then
             STATUS="共有リンク(share link) 最終更新日(last update): $LAST_UPDATE (**⚠️ $DIFF 日経過 - まもなくリンク切れ**)  \n次回更新予定日(next update): $NEXT_UPDATE"
           else
             STATUS="共有リンク(share link) 最終更新日(last update): $LAST_UPDATE ($DIFF 日経過)  \n次回更新予定日(next update): $NEXT_UPDATE"
