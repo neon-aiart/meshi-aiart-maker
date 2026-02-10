@@ -19,12 +19,12 @@ jobs:
           NEXT_UPDATE=$(date -d "$LAST_UPDATE + 60 days" +%Y-%m-%d)
           LINK_URL="https://gemini.google.com/share/935ca94636c9"
 
-          # ページの中身を取得して、特定のキーワード（例: Meshi）が含まれているか検索するわ
+          # ページの中身を取得して、特定のキーワード（例: neon）が含まれているか検索するわ
           # -L はリダイレクトを追いかけるオプションよ
           PAGE_CONTENT=$(curl -sL "$LINK_URL")
 
-          # 「Meshi」という単語が含まれているかチェック（ねおんちゃんのアプリ名の一部ね）
-          if echo "$PAGE_CONTENT" | grep -q "Meshi"; then
+          # 「neon」という単語が含まれているかチェック
+          if echo "$PAGE_CONTENT" | grep -qi "neon"; then
             LINK_ALIVE=true
           else
             LINK_ALIVE=false
@@ -34,7 +34,7 @@ jobs:
           DIFF=$(( ($(date -d "$CURRENT_DATE" +%s) - $(date -d "$LAST_UPDATE" +%s)) / 86400 ))
 
           if [ "$LINK_ALIVE" = false ]; then
-            STATUS="🔴 **【リンク切れ検知】** 共有リンクが失効している可能性があります (要確認)\n最終確認: $CURRENT_DATE"
+            STATUS="🔴 **【リンク切れ検知】** 共有リンクが失効している可能性があります (要確認)  \n最終確認: $CURRENT_DATE"
           elif [ $DIFF -ge 60 ]; then
             STATUS="共有リンク(share link) 最終更新日(last update): $LAST_UPDATE (**⚠️ $DIFF 日経過 - まもなくリンク切れ**)  \n次回更新予定日(next update): $NEXT_UPDATE"
           else
