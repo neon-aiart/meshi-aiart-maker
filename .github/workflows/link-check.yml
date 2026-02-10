@@ -1,4 +1,4 @@
-name: Update Readme and Link Check
+name: Update Readme
 
 on:
   schedule:
@@ -17,36 +17,31 @@ jobs:
         run: |
           LAST_UPDATE="2026-02-10"
           NEXT_UPDATE=$(date -d "$LAST_UPDATE + 60 days" +%Y-%m-%d)
-          # LINK_URL="https://gemini.google.com/share/935ca94636c9"
-          # LINK_URL="https://gemini.google.com/share/bec95c772552"
-          LINK_URL="https://gemini.google.com/share/cdede125aba3"
-
-          # ページの中身を取得して、特定のキーワード（例: neon）が含まれているか検索するわ
-          # -L はリダイレクトを追いかけるオプションよ
-          PAGE_CONTENT=$(curl -sL "$LINK_URL")
-
-          curl -sL "$LINK_URL" > temp.html
-          echo "--- START OF HTML ---"
-          cat temp.html
-          echo "--- END OF HTML ---"
-
-          # 「neon」という単語が含まれているかチェック
-          if echo "$PAGE_CONTENT" | grep -qi "neon"; then
-            LINK_ALIVE=true
-          else
-            LINK_ALIVE=false
-          fi
 
           CURRENT_DATE=$(date +%Y-%m-%d)
           DIFF=$(( ($(date -d "$CURRENT_DATE" +%s) - $(date -d "$LAST_UPDATE" +%s)) / 86400 ))
 
-          if [ "$LINK_ALIVE" = false ]; then
-            STATUS="🔴 **【リンク切れ検知】** 共有リンクが失効している可能性があります(share link expired)  \n最終更新日(last update): $LAST_UPDATE"
-          elif [ $DIFF -ge 60 ]; then
-            STATUS="🟡 **まもなくリンク切れ** 共有リンク(share link) 最終更新日(last update): $LAST_UPDATE ($DIFF 日経過)  \n次回更新予定日(next update): $NEXT_UPDATE"
-          else
-            STATUS="🟢 共有リンク(share link) 最終更新日(last update): $LAST_UPDATE ($DIFF 日経過)  \n次回更新予定日(next update): $NEXT_UPDATE"
-          fi
+          # # ページの中身を取得して、特定のキーワード（例: neon）が含まれているか検索するわ
+          # # -L はリダイレクトを追いかけるオプションよ
+          # LINK_URL="https://gemini.google.com/share/935ca94636c9"
+          # PAGE_CONTENT=$(curl -sL "$LINK_URL")
+
+          # # "neon" という単語が含まれているかチェック
+          # if echo "$PAGE_CONTENT" | grep -qi "neon"; then
+          #   LINK_ALIVE=true
+          # else
+          #   LINK_ALIVE=false
+          # fi
+
+          # if [ "$LINK_ALIVE" = false ]; then
+          #   STATUS="🔴 **【リンク切れ検知】** 共有リンクが失効している可能性があります(share link expired)  \n最終更新日(last update): $LAST_UPDATE"
+          # elif [ $DIFF -ge 60 ]; then
+          #   STATUS="🟡 **まもなくリンク切れ** 共有リンク(share link) 最終更新日(last update): $LAST_UPDATE ($DIFF 日経過)  \n次回更新予定日(next update): $NEXT_UPDATE"
+          # else
+          #   STATUS="🟢 共有リンク(share link) 最終更新日(last update): $LAST_UPDATE ($DIFF 日経過)  \n次回更新予定日(next update): $NEXT_UPDATE"
+          # fi
+
+          STATUS="共有リンク(share link) 最終更新日(last update): $LAST_UPDATE ($DIFF 日経過)"
 
           # 魔法のsedコマンド（エスケープ版）
           sed -i "/STATUS_START/,/STATUS_END/c\\\x3c\x21\x2d\x2d STATUS_START \x2d\x2d\x3e\n$STATUS  \n\x3c\x21\x2d\x2d STATUS_END \x2d\x2d\x3e" README.md
