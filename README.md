@@ -49,8 +49,8 @@ Please use the app directly in the Gemini Canvas environment via the link below.
 **[🍴 飯テロメーカーを試す / Try Meshi Art Maker 🍴](https://gemini.google.com/share/935ca94636c9)**  
 
 <!-- STATUS_START -->
-共有リンク(share link) 最終更新日(last update): 2026-02-10 (0 日経過)  
-次回更新予定日(next update): 2026-04-11  
+🔴 **【リンク切れ検知】** 共有リンクが失効している可能性があります (要確認)
+最終確認: 2026-02-10  
 <!-- STATUS_END -->
 
 ### ⚠️ 動作環境 / Environment & Benefits  
