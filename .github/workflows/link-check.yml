@@ -18,7 +18,8 @@ jobs:
           LAST_UPDATE="2026-02-10"
           NEXT_UPDATE=$(date -d "$LAST_UPDATE + 60 days" +%Y-%m-%d)
           # LINK_URL="https://gemini.google.com/share/935ca94636c9"
-          LINK_URL="https://gemini.google.com/share/bec95c772552"
+          # LINK_URL="https://gemini.google.com/share/bec95c772552"
+          LINK_URL="https://gemini.google.com/share/cdede125aba3"
 
           # ページの中身を取得して、特定のキーワード（例: neon）が含まれているか検索するわ
           # -L はリダイレクトを追いかけるオプションよ
