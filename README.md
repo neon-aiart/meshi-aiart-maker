@@ -52,6 +52,11 @@ Please use the app directly in the Gemini Canvas environment via the link below.
 共有リンク(share link) 最終更新日(last update): 2026-01-30 (15 日経過)  
 <!-- STATUS_END -->
 
+**Old Version**:  
+v19.8 (2026-01-30) [https://gemini.google.com/share/935ca94636c9](https://gemini.google.com/share/935ca94636c9)  
+v19.7 (2026-01-19) [https://gemini.google.com/share/e2f2c5d2fb50](https://gemini.google.com/share/e2f2c5d2fb50)  
+v19.6 (2026-01-11) [https://gemini.google.com/share/c9467688120b](https://gemini.google.com/share/c9467688120b)  
+
 ### ⚠️ 動作環境 / Environment & Benefits  
 
 このアプリは、単なる画像生成ツールではありません。  
@@ -118,7 +123,7 @@ An overview of the core prompt design and control logic of this application.
 ### v19.9 (Current Release)  
 ✅ 👩🏻‍🍳 シェフの気まぐれメニューにツールチップで由来を可視化  
 
-### v19.8
+### v19.8  
 ☑️ おまかせの初期値をOFFに変更  
 ☑️ Retryを３回から５回に変更  
 ☑️ ダウンロード時に選択状態にする  
