@@ -251,6 +251,15 @@
             white-space: pre-wrap;
             width: max-content;
         }
+        .tooltip .tooltiptext.chef-tooltip {
+            bottom: 120%; /* アイコンの上に表示 */
+            right: -30px; /* アイコンの位置に合わせる */
+            background-color: rgba(62, 39, 35, 0.95); /* モーダルより濃い茶色 */
+            border: 1px solid #6d4c41;
+            max-width: 300px;
+            white-space: normal;
+            text-align: left;
+        }
 
         /* 三角形（矢印）の設定 */
         .tooltip::after {
@@ -272,7 +281,7 @@
         /* 個別の設定 */
         .tooltip:has(.info-tooltip)::after {
             top: 120%;
-            margin-top: -12px;
+            margin-top: -11px;
             left: 50%;
             transform: translateX(-50%) translateY(10px);
             border-color: transparent transparent #324E transparent;
@@ -282,7 +291,7 @@
         }
         .tooltip:has(.action-tooltip)::after {
             top: 120%;
-            margin-top: -12px;
+            margin-top: -11px;
             left: 50%;
             transform: translateX(-50%) translateY(10px);
             border-color: transparent transparent #555E transparent;
@@ -292,13 +301,23 @@
         }
         .tooltip:has(.prompt-tooltip)::after {
             bottom: 120%;
-            margin-bottom: -12px;
+            margin-bottom: -11px;
             right: 13px;
             transform: translateY(10px);
             border-color: #555E transparent transparent transparent;
         }
-        .tooltip:hover:has(.prompt-tooltip)::after {
+        .tooltip:hover:has(.prompt-tooltip)::after,
+        .tooltip:hover:has(.chef-tooltip)::after {
             transform: translateY(0);
+        }
+
+        /* chef-tooltip用の三角形（下向き矢印） */
+        .tooltip:has(.chef-tooltip)::after {
+            bottom: 120%;
+            margin-bottom: -11px;
+            right: 3px; /* infoアイコンの真下に来るように微調整 */
+            transform: translateY(10px);
+            border-color: rgba(62, 39, 35, 0.95) transparent transparent transparent;
         }
 
         /* 無効化されたボタンのスタイル */
@@ -569,7 +588,7 @@
 
     <script type="module">
         /* Copyright (c) 2025-2026 ねおん / Licensed under PolyForm Noncommercial 1.0.0 (https://polyformproject.org/licenses/noncommercial/1.0.0/) */
-        const APP_VERSION = '19.8';
+        const APP_VERSION = '19.9';
 
         // Firebaseライブラリをインポート
         import { getAuth, onAuthStateChanged, } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
@@ -1465,12 +1484,15 @@
                 上記テーマに合うう「料理名」と、その料理が最も美味しそうに見える「背景やシチュエーション」を方向性の異なる【3種類】提案してください。
                 3つとも似たような食材にならないように、食材のバリエーションを散らして
                 1つは王道、1つは少し意外なもの、1つはシェフの遊び心が詰まったものにしてください。
+                3つとも同じような由来にならないように、由来のバリエーションを散らして
+                1つは注目度が高いもの、1つは意外なもの、1つはシェフの気まぐれに選んだものにしてください。
+                由来には、そのメニューを選んだ根拠を簡潔に記載してください。
 
                 出力は必ず以下のJSONフォーマット（配列）のみで行ってください。
                 [
-                    {"food": "料理名1", "background": "背景1"},
-                    {"food": "料理名2", "background": "背景2"},
-                    {"food": "料理名3", "background": "背景3"}
+                    {"food": "料理名1", "background": "背景1", "source": "由来1"},
+                    {"food": "料理名2", "background": "背景2", "source": "由来2"},
+                    {"food": "料理名3", "background": "背景3", "source": "由来3"}
                 ]`;
 
             const payload = {
@@ -1540,10 +1562,18 @@
                                 `;
                                 btn.onmouseover = () => btn.style.background = '#6d4c41';
                                 btn.onmouseout = () => btn.style.background = '#5d4037';
-
-                                btn.innerHTML = `<div style="font-weight:bold; color:#ffe0b2;">${item.food}</div>
-                                                <div style="font-size:0.75rem; color:#d7ccc8; margin-top:4px; line-height:1.3;">${item.background.substring(0, 60)}...</div>`;
-
+                                btn.innerHTML = `
+                                    <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px;">
+                                        <div style="font-weight: bold; color: #ffe0b2; flex: 1;">${item.food}</div>
+                                        <div class="tooltip" style="flex-shrink: 0;">
+                                            <span class="material-icons" style="font-size: 1.2rem; color: #ffcc80; cursor: help;">info</span>
+                                            <span class="tooltiptext chef-tooltip" style="font-weight: normal; font-size: 0.9rem;">${item.source || 'シェフの気まぐれ'}</span>
+                                        </div>
+                                    </div>
+                                    <div style="font-size: 0.8rem; color: #d7ccc8; margin-top: 6px; line-height: 1.3;">${item.background.substring(0, 60)}...</div>
+                                `;
+                                btn.querySelector('.material-icons').addEventListener('click', (e) => e.stopPropagation());
+                                btn.querySelector('.tooltip').addEventListener('click', (e) => e.stopPropagation());
                                 btn.onclick = () => {
                                     overlay.remove(); resolve(item);
                                 };
