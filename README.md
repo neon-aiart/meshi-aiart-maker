@@ -115,10 +115,10 @@ An overview of the core prompt design and control logic of this application.
 
 ## 📝 更新履歴  
 
-### v19.9 (Unrelease)  
-☑️ おまかせの初期値をOFFに変更  
+### v19.9 (Current Release)  
+✅ 👩🏻‍🍳 シェフの気まぐれメニューにツールチップで由来を可視化  
 
-### v19.8 (Current Release)  
+### v19.8
 ☑️ おまかせの初期値をOFFに変更  
 ☑️ Retryを３回から５回に変更  
 ☑️ ダウンロード時に選択状態にする  
