@@ -1,4 +1,4 @@
-# 🍽️ 飯テロメーカー (Meshi Aiart Maker) v19.8  
+# 🍽️ 飯テロメーカー (Meshi Aiart Maker) v19.9  
 
 <img src="https://raw.githubusercontent.com/neon-aiart/meshi-art-maker/main/meshi_maker_20251101_235534.png" style="height: 200px; width: 200px; object-fit: contain;" align="right" alt="thumbnail" />
 
@@ -114,6 +114,9 @@ An overview of the core prompt design and control logic of this application.
 ---
 
 ## 📝 更新履歴  
+
+### v19.9 (Unrelease)  
+☑️ おまかせの初期値をOFFに変更  
 
 ### v19.8 (Current Release)  
 ☑️ おまかせの初期値をOFFに変更  
