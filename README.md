@@ -46,7 +46,7 @@ Leveraging the AI models (**Imagen 3.0** & **Gemini 2.5 Flash**), it can generat
 以下のリンクから、Gemini Canvas環境で直接アプリをご利用ください。  
 Please use the app directly in the Gemini Canvas environment via the link below.  
 
-🍴 **[飯テロメーカーを試す / Try Meshi Art Maker](https://gemini.google.com/share/935ca94636c9)** 🍴  
+🍴 **[飯テロメーカーを試す / Try Meshi Art Maker](https://gemini.google.com/share/a085125e42a6)** 🍴  
 
 <!-- STATUS_START -->
 共有リンク(share link) 最終更新日(last update): 2026-01-30 (11 日経過)  
