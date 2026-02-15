@@ -47,7 +47,6 @@ Leveraging the AI models (**Imagen 3.0** & **Gemini 2.5 Flash**), it can generat
 Please use the app directly in the Gemini Canvas environment via the link below.  
 
 🍴 **[飯テロメーカーを試す / Try Meshi Art Maker](https://gemini.google.com/share/935ca94636c9)** 🍴  
-
 <!-- STATUS_START -->
 共有リンク(share link) 最終更新日(last update): 2026-01-30 (11 日経過)  
 <!-- STATUS_END -->
@@ -115,10 +114,10 @@ An overview of the core prompt design and control logic of this application.
 
 ## 📝 更新履歴  
 
-### v19.9 (Unrelease)  
-☑️ おまかせの初期値をOFFに変更  
+### v19.9 (Current Release)  
+✅ 👩🏻‍🍳 シェフの気まぐれメニューにツールチップで由来を可視化  
 
-### v19.8 (Current Release)  
+### v19.8
 ☑️ おまかせの初期値をOFFに変更  
 ☑️ Retryを３回から５回に変更  
 ☑️ ダウンロード時に選択状態にする  
