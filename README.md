@@ -1,4 +1,4 @@
-# 🍽️ 飯テロメーカー (Meshi Aiart Maker) v19.9  
+# 🍽️ 飯テロメーカー (Meshi Aiart Maker) v20.0  
 
 <img src="https://raw.githubusercontent.com/neon-aiart/meshi-art-maker/main/meshi_maker_20251101_235534.png" style="height: 200px; width: 200px; object-fit: contain;" align="right" alt="thumbnail" />
 
@@ -46,13 +46,14 @@ Leveraging the AI models (**Imagen 3.0** & **Gemini 2.5 Flash**), it can generat
 以下のリンクから、Gemini Canvas環境で直接アプリをご利用ください。  
 Please use the app directly in the Gemini Canvas environment via the link below.  
 
-🍴 **[飯テロメーカーを試す / Try Meshi Art Maker](https://gemini.google.com/share/a085125e42a6)** 🍴  
+🍴 **[飯テロメーカーを試す / Try Meshi Art Maker](https://gemini.google.com/share/71ce1dcf42c4)** 🍴  
 
 <!-- STATUS_START -->
 share link last update: 2026-02-15 (2 days ago)  
 <!-- STATUS_END -->
 
 **Old Version**:  
+v19.8 (2026-02-15) [https://gemini.google.com/share/935ca94636c9](https://gemini.google.com/share/935ca94636c9)  
 v19.8 (2026-01-30) [https://gemini.google.com/share/935ca94636c9](https://gemini.google.com/share/935ca94636c9)  
 v19.7 (2026-01-19) [https://gemini.google.com/share/e2f2c5d2fb50](https://gemini.google.com/share/e2f2c5d2fb50)  
 v19.6 (2026-01-11) [https://gemini.google.com/share/c9467688120b](https://gemini.google.com/share/c9467688120b)  
