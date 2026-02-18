@@ -120,6 +120,9 @@ An overview of the core prompt design and control logic of this application.
 
 ## 📝 更新履歴  
 
+### v20.0 (UnReleased)  
+☑️ 応急処置として gemini-2.5-flash-preview-05-20 を gemini-2.5-flash-image-preview に変更  
+
 ### v19.9 (Current Release)  
 ✅ 👩🏻‍🍳 シェフの気まぐれメニューにツールチップで由来を可視化  
 
