@@ -1,12 +1,12 @@
-# 🍽️ 飯テロメーカー (Meshi Aiart Maker) v19.9  
+# 🍽️ 飯テロメーカー (Meshi Aiart Maker) v20.1  
 
 <img src="https://raw.githubusercontent.com/neon-aiart/meshi-art-maker/main/meshi_maker_20251101_235534.png" style="height: 200px; width: 200px; object-fit: contain;" align="right" alt="thumbnail" />
 
 このアプリケーションは、**GoogleのGemini Canvas環境**専用の、究極の「飯テロ」画像生成補助アプリです。  
-AIモデル（**Imagen 3.0** & **Gemini 2.5 Flash**）を駆使し、見る者の食欲を限界まで刺激する高品質な料理イラストに加え、臨場感あふれる食レポや献立アイデアを生成できます。  
+AIモデル（**Imagen 4.0** & **Gemini 2.5 Flash**）を駆使し、見る者の食欲を限界まで刺激する高品質な料理イラストに加え、臨場感あふれる食レポや献立アイデアを生成できます。  
 
 This application is an ultimate "Appetite-Stimulating" image generation aid specifically designed for the **Google Gemini Canvas environment**.  
-Leveraging the AI models (**Imagen 3.0** & **Gemini 2.5 Flash**), it can generate high-quality food illustrations that push the viewer's appetite to the limit, along with immersive food reviews and meal planning ideas.  
+Leveraging the AI models (**Imagen 4.0** & **Gemini 2.5 Flash**), it can generate high-quality food illustrations that push the viewer's appetite to the limit, along with immersive food reviews and meal planning ideas.  
 
 ⭐ [スター](https://github.com/neon-aiart/meshi-art-maker/)をポチッとお願いします✨ (Please hit the [Star] button!)  
 
@@ -16,9 +16,9 @@ Leveraging the AI models (**Imagen 3.0** & **Gemini 2.5 Flash**), it can generat
 
 ## 🎀 機能紹介 / Features  
 
-1. 💎 **Imagen 3.0 最適化プロンプト生成 / Imagen 3.0 Optimized Prompting**:  
-   * 入力された料理名をAIが深く理解し、Imagen 3.0の性能を最大限に引き出す高精細な英語プロンプトへ自動翻訳・拡張します。  
-     The AI deeply understands the entered dish and automatically translates and expands it into high-definition English prompts that maximize the performance of Imagen 3.0.  
+1. 💎 **Imagen 4.0 最適化プロンプト生成 / Imagen 4.0 Optimized Prompting**:  
+   * 入力された料理名をAIが深く理解し、Imagen 4.0の性能を最大限に引き出す高精細な英語プロンプトへ自動翻訳・拡張します。  
+     The AI deeply understands the entered dish and automatically translates and expands it into high-definition English prompts that maximize the performance of Imagen 4.0.  
 
 2. 👩🏻‍🍳 **シェフの気まぐれメニュー / Chef's Special Menu**:  
    * 「今日は何の日？」や季節・トレンドをAIが分析し、その日にぴったりの料理を【3種類】提案します。  
@@ -46,17 +46,13 @@ Leveraging the AI models (**Imagen 3.0** & **Gemini 2.5 Flash**), it can generat
 以下のリンクから、Gemini Canvas環境で直接アプリをご利用ください。  
 Please use the app directly in the Gemini Canvas environment via the link below.  
 
-v20.0 (UnReleased)
-🍴 **[飯テロメーカーを試す / Try Meshi Art Maker](https://gemini.google.com/share/71ce1dcf42c4)** 🍴  
+🍴 **[飯テロメーカーを試す / Try Meshi Art Maker](https://gemini.google.com/share/fa237f56bf25)** 🍴  
 <!-- STATUS_START -->
 share link last update: 2026-02-15 (3 days ago)  
 <!-- STATUS_END -->
 
 **Old Version**:  
-v19.9 (2026-02-15) [https://gemini.google.com/share/935ca94636c9](https://gemini.google.com/share/935ca94636c9)  
-v19.8 (2026-01-30) [https://gemini.google.com/share/935ca94636c9](https://gemini.google.com/share/935ca94636c9)  
-v19.7 (2026-01-19) [https://gemini.google.com/share/e2f2c5d2fb50](https://gemini.google.com/share/e2f2c5d2fb50)  
-v19.6 (2026-01-11) [https://gemini.google.com/share/c9467688120b](https://gemini.google.com/share/c9467688120b)  
+v20.0 (2026-02-19) [https://gemini.google.com/share/71ce1dcf42c4](https://gemini.google.com/share/71ce1dcf42c4)  
 
 ### ⚠️ 動作環境 / Environment & Benefits  
 
@@ -65,10 +61,10 @@ v19.6 (2026-01-11) [https://gemini.google.com/share/c9467688120b](https://gemini
 This app is more than just an image generator.  
 It is designed to thoroughly optimize the process of "making AI create delicious food," from automatic prompt translation and refinement to intelligent food reviews and meal suggestions.  
 
-* **Imagen 3 の無料枠を最大限に活用:** 通常のGeminiチャットでの画像生成は回数制限が厳しく、モデルも制限される場合があります。  
-  このアプリを使用することで、Canvas環境のインフラを通じた高品質な **Imagen 3** による生成を、無料枠の範囲内で効率的に活用することが可能です。  
-  **Maximizing Imagen 3 Free Tier:** While direct image generation in Gemini chat often has strict limits and may use scaled-down models,  
-  this app allows you to efficiently utilize high-quality **Imagen 3** generation within the free tier through the Canvas environment's infrastructure.  
+* **Imagen 4 の無料枠を最大限に活用:** 通常のGeminiチャットでの画像生成は回数制限が厳しく、モデルも制限される場合があります。  
+  このアプリを使用することで、Canvas環境のインフラを通じた高品質な **Imagen 4** による生成を、無料枠の範囲内で効率的に活用することが可能です。  
+  **Maximizing Imagen 4 Free Tier:** While direct image generation in Gemini chat often has strict limits and may use scaled-down models,  
+  this app allows you to efficiently utilize high-quality **Imagen 4** generation within the free tier through the Canvas environment's infrastructure.  
 * **Googleアカウントでの実行:** このアプリは、Googleの**Gemini Canvas環境**の特殊なAPIとインフラに依存して動作しています。  
   **Run via Google Account:** This app relies on the unique API and infrastructure of Google's **Gemini Canvas environment**.  
 * **利用時の注意:** 全ての処理は**あなたのGoogleアカウント**を経由して実行されます。  
@@ -92,8 +88,8 @@ An overview of the core prompt design and control logic of this application.
   You can check or reuse how the AI interpreted the dish.  
 
 ### 2. 飯テロ画像生成ロジック / Image Generation Logic  
-* **プロフェッショナル・プロンプト・クリエイター**: ユーザーの入力を分析し、Imagen 3.0向けに「五感を刺激する形容詞」や「写真技術用語」を駆使した高精細プロンプトへ拡張します。  
-  **Professional Prompt Creator**: Analyzes user input and expands it into high-definition prompts for Imagen 3.0, utilizing "sensory adjectives" and "technical photography terms."  
+* **プロフェッショナル・プロンプト・クリエイター**: ユーザーの入力を分析し、Imagen 4.0向けに「五感を刺激する形容詞」や「写真技術用語」を駆使した高精細プロンプトへ拡張します。  
+  **Professional Prompt Creator**: Analyzes user input and expands it into high-definition prompts for Imagen 4.0, utilizing "sensory adjectives" and "technical photography terms."  
 
 ### 3. 食レポ生成: 画像解析による3段階の役割定義 / Image-Based Persona Control for Reviews  
 * 文章生成時、最初にAIが画像から料理のカテゴリーを自動判定し、その雰囲気に最も適したペルソナ（文体）を割り当てます。  
@@ -121,10 +117,14 @@ An overview of the core prompt design and control logic of this application.
 
 ## 📝 更新履歴  
 
-### v20.0 (UnReleased)  
-☑️ 応急処置として gemini-2.5-flash-preview-05-20 を gemini-2.5-flash-image-preview に変更  
+### v20.1 (Current Release)  
+✅ テキスト応答Geminiモデルを `gemini-2.5-flash-preview-09-2025` に変更  
+✅ 画像生成Imagenモデルを `imagen-4.0-generate-001` に変更  
 
-### v19.9 (Current Release)  
+### v20.0 (UnReleased)  
+☑️ 応急処置として `gemini-2.5-flash-preview-05-20` を `gemini-2.5-flash-image-preview` に変更  
+
+### v19.9  
 ✅ 👩🏻‍🍳 シェフの気まぐれメニューにツールチップで由来を可視化  
 
 ### v19.8  
@@ -224,7 +224,7 @@ Furthermore, we are actively submitting **Malware / Abuse Reports** to relevant 
     さらに推敲指示を徹底することで、文字数指定の厳密化という難題に正面から向き合い、解決したその姿勢は、**不確実な技術を「確実な製品」へと変えるプロフェッショナルな設計思想**を証明しています。  
 
 * **プラットフォームの制約を逆手に取った付加価値の創造**:  
-  * チャットUIでは不可能な「方言一括変換」や「Imagen 3の最適化利用」を、Canvasという特殊な環境下で統合。  
+  * チャットUIでは不可能な「方言一括変換」や「Imagen 4の最適化利用」を、Canvasという特殊な環境下で統合。  
     既存のインフラを最大限に活用しつつ、**ユーザーが「手軽に、かつ高品質に」楽しむための導線を完璧に設計**した点は、プラットフォームの可能性を拡張する**先駆的なベンチマーク**となります。  
 
 * **技術と遊び心の高次元での融合**:  

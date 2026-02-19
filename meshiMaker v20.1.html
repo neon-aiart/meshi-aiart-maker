@@ -588,7 +588,7 @@
 
     <script type="module">
         /* Copyright (c) 2025-2026 ねおん / Licensed under PolyForm Noncommercial 1.0.0 (https://polyformproject.org/licenses/noncommercial/1.0.0/) */
-        const APP_VERSION = '19.9';
+        const APP_VERSION = '20.1';
 
         // Firebaseライブラリをインポート
         import { getAuth, onAuthStateChanged, } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
@@ -597,9 +597,9 @@
 
         // --- 定数とUI要素の取得 ---
         const API_KEY = ''; // APIキーはCanvas環境から提供されるので空のままでOK
-        const TRANSLATION_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${API_KEY}`;
-        const IMAGE_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key=${API_KEY}`;
-        const LLM_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${API_KEY}`;
+        const TRANSLATION_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${API_KEY}`;
+        const IMAGE_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${API_KEY}`;
+        const LLM_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${API_KEY}`;
         const IMAGE_COUNT = 4; // 一度に生成する画像の数
 
         // HTMLから操作したい要素をまとめて取得
@@ -739,6 +739,7 @@
                 systemInstruction: {
                     parts: [{ text: 'You are a professional prompt engineer for a food image generation model. Your task is to create the most appetizing and delicious-sounding English prompts based on user input.', },],
                 },
+                generationConfig: { responseModalities: ['TEXT',], },
             };
             try {
                 const response = await fetchWithRetry(() => fetch(TRANSLATION_API_URL, {
@@ -747,10 +748,16 @@
                     body: JSON.stringify(payload),
                 }));
                 const result = await response.json();
-                const translatedText = result?.candidates?.[0]?.content?.parts?.[0]?.text;
-                if (!translatedText) {
+                const rawText = result?.candidates?.[0]?.content?.parts?.[0]?.text;
+
+                if (!rawText) {
                     throw new Error('翻訳に失敗しました: レスポンスにテキストが含まれていません');
                 }
+
+                // --- 整形ロジック (Markdownの除去) ---
+                const translatedText = rawText.replace(/```[a-z]*\n?|```/g, "").trim();
+
+                console.log('Translated Text:', translatedText);
                 return translatedText;
             } catch (error) {
                 console.error('翻訳に失敗しました:', error);
@@ -788,6 +795,7 @@
             const payload = {
                 contents: [{ parts: [{ text: userRequest, },], },],
                 systemInstruction: { parts: [{ text: systemPrompt, },], },
+                generationConfig: { responseModalities: ['TEXT',], },
             };
 
             try {
@@ -797,12 +805,22 @@
                     body: JSON.stringify(payload),
                 }));
                 const result = await response.json();
-                const finalPrompt = result?.candidates?.[0]?.content?.parts?.[0]?.text;
-                if (!finalPrompt) {
+                const rawText = result?.candidates?.[0]?.content?.parts?.[0]?.text;
+
+                if (!rawText) {
                     throw new Error('プロンプトの作成に失敗しました');
                 }
-                console.log('生成された画像プロンプト:', finalPrompt); // デバッグ用にコンソールに表示
-                return finalPrompt.trim();
+
+                // --- 整形ロジック ---
+                // 1. Markdownタグの除去
+                // 2. もしAIが「Prompt: ...」のように接頭辞をつけてきた場合、それ以降を抽出
+                let finalPrompt = rawText.replace(/```[a-z]*\n?|```/g, "").trim();
+                if (finalPrompt.toLowerCase().startsWith("prompt:")) {
+                    finalPrompt = finalPrompt.substring(7).trim();
+                }
+
+                console.log('生成された画像プロンプト:', finalPrompt);
+                return finalPrompt;
             } catch (error) {
                 console.error('高度な画像プロンプトの作成に失敗しました:', error);
                 // 失敗した場合は、シンプルな翻訳機能に切り替える
@@ -1498,9 +1516,7 @@
             const payload = {
                 contents: [{ parts: [{ text: userPrompt, },], },],
                 systemInstruction: { parts: [{ text: systemPrompt, },], },
-                generationConfig: {
-                    responseMimeType: 'application/json', // 確実にJSONで受け取る
-                },
+                generationConfig: { responseModalities: ['TEXT', ], },
             };
 
             try {
@@ -1517,9 +1533,19 @@
                 if (!suggestionText) {
                     throw new Error('シェフが不在のようです');
                 }
+                // console.log('Raw Response from Chef:', suggestionText);
+
+                // --- JSONの整形ロジック ---
+                // 1. [ { ... } ] の形を文字列から探し出す
+                const jsonMatch = suggestionText.match(/\[\s*\{[\s\S]*\}\s*\]/);
+
+                // 2. 見つかればそれを使う。なければ（念のため）Markdownのタグを消した版を作る
+                const cleanJsonText = jsonMatch
+                    ? jsonMatch[0]
+                    : suggestionText.replace(/```json\n?|```/g, "").trim();
 
                 // --- JSONを解析 ---
-                const suggestions = JSON.parse(suggestionText);
+                const suggestions = JSON.parse(cleanJsonText);
 
                 let selected;
                 if (chefMoodCheckbox.checked) {
@@ -1752,7 +1778,7 @@
                 const payload = {
                     contents: [{ parts: [{ text: bodyText, },], },],
                     systemInstruction: { parts: [{ text: systemPrompt, },], },
-                    generationConfig: { responseMimeType: 'application/json', }, // JSONモード
+                    generationConfig: { responseModalities: ['TEXT', ], },
                 };
 
                 const response = await fetchWithRetry(() => fetch(TRANSLATION_API_URL, {
@@ -1764,18 +1790,25 @@
                 const result = await response.json();
                 const jsonText = result?.candidates?.[0]?.content?.parts?.[0]?.text;
 
-                // JSON解析エラー対策
+                if (!jsonText) {
+                    throw new Error('翻訳データが空です');
+                }
+
+                // --- JSONの整形ロジック (オブジェクト { } を探す版) ---
+                // 最初に出てくる { から 最後に出てくる } までを抜き出す
+                const jsonMatch = jsonText.match(/\{[\s\S]*\}/);
+
+                const cleanJsonText = jsonMatch
+                    ? jsonMatch[0]
+                    : jsonText.replace(/```json\n?|```/g, "").trim();
+
+                // JSON解析
                 let translations;
                 try {
-                    translations = JSON.parse(jsonText);
+                    translations = JSON.parse(cleanJsonText);
                 } catch (e) {
-                    // 万が一JSON以外の文字が混ざっていた場合の抽出
-                    const jsonMatch = jsonText.match(/\{.*\}/s);
-                    if (jsonMatch) {
-                        translations = JSON.parse(jsonMatch[0]);
-                    } else {
-                        throw new Error('JSON形式での取得に失敗しました');
-                    }
+                    console.error('JSON Parse Error:', e, 'Text:', cleanJsonText);
+                    throw new Error('JSON形式での取得に失敗しました');
                 }
 
                 // 全方言を一気にキャッシュに保存
