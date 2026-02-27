@@ -113,6 +113,30 @@ An overview of the core prompt design and control logic of this application.
 * **方言一括翻訳 (JSON制御)**: ４種の方言をJSONフォーマットで厳密に管理し、破綻のない一括変換を実現。  
   **Dialect Translation (JSON Control)**: Strictly manages four dialects via JSON format to achieve flawless batch conversion.  
 
+
+---
+
+### 📺 紹介動画 (Overview Video)  
+
+<p align="center"><a href="https://youtu.be/8zejiDRTeWk" markdown="1">
+    <img src="https://img.youtube.com/vi/8zejiDRTeWk/maxresdefault.jpg" alt="Meshi AIart Maker Overview" style="width:100%; max-width:600px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);"><br />
+    ▶️ クリックしてYouTubeで再生 (Click to play on YouTube)
+</a></p>  
+
+## 🎨 インフォグラフィック (Infographic)  
+
+<details><summary>
+    🇯🇵 日本語版を表示 (View Japanese Version)
+</summary>
+<img src="meshi-aiart-maker-info-jp.png" alt="Infographic JP" width="100%">
+</details>
+
+<details><summary>
+    🇺🇸 English Version (View English Version)
+</summary>
+<img src="meshi-aiart-maker-info-en.png" alt="Infographic EN" width="100%">
+</details>
+
 ---
 
 ## 📝 更新履歴  
