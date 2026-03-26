@@ -1,4 +1,4 @@
-# 🍽️ 飯テロメーカー (Meshi Aiart Maker) v20.1  
+# 🍽️ 飯テロメーカー (Meshi Aiart Maker) v20.4  
 
 <img src="https://raw.githubusercontent.com/neon-aiart/meshi-art-maker/main/meshi_maker_20251101_235534.png" style="height: 200px; width: 200px; object-fit: contain;" align="right" alt="thumbnail" />
 
@@ -82,16 +82,19 @@ It is designed to thoroughly optimize the process of "making AI create delicious
 An overview of the core prompt design and control logic of this application.  
 
 ### 1. プロンプトコピー機能 / Prompt Export  
+
 * 生成に使用された最終的な英語プロンプトをクリップボードにコピーできます。  
   AIがどのように料理を解釈したかを確認・再利用可能です。  
   Allows you to copy the final English prompt used for generation.  
   You can check or reuse how the AI interpreted the dish.  
 
 ### 2. 飯テロ画像生成ロジック / Image Generation Logic  
+
 * **プロフェッショナル・プロンプト・クリエイター**: ユーザーの入力を分析し、Imagen 4.0向けに「五感を刺激する形容詞」や「写真技術用語」を駆使した高精細プロンプトへ拡張します。  
   **Professional Prompt Creator**: Analyzes user input and expands it into high-definition prompts for Imagen 4.0, utilizing "sensory adjectives" and "technical photography terms."  
 
 ### 3. 食レポ生成: 画像解析による3段階の役割定義 / Image-Based Persona Control for Reviews  
+
 * 文章生成時、最初にAIが画像から料理のカテゴリーを自動判定し、その雰囲気に最も適したペルソナ（文体）を割り当てます。  
   During review generation, the AI first identifies the food category from the image and assigns the most suitable persona and writing style.  
   * **カジュアル・ジャンク系**: グルメインフルエンサーによる、直感的な欲求と快楽の追求。  
@@ -102,17 +105,18 @@ An overview of the core prompt design and control logic of this application.
     **Versatile & General**: Immersive and realistic descriptions of taste and aroma by a magazine writer.  
 
 ### 4. 厳密な文字数制御とリトライ / Strict Word Count Control  
+
 * **１文字の狂いも許さない推敲指示**: 目標文字数に収まるまで内部でカウントと調整を繰り返すプロンプトを採用。  
   **Strict Revision Instructions**: Uses prompts that internally repeat counting and adjustment until the target word count is met.  
 * **５回リトライ・ロジック**: 出力が許容範囲（指定+50文字以内）を超えた場合、最大５回まで自動リトライを実行し、最善の結果を採用します。  
   **5-Step Retry Logic**: If the output exceeds the tolerance (within +50 characters of the target), it automatically retries up to 5 times to achieve the best result.  
 
 ### 5. スマートなコンテンツ生成 / Smart Content Generation  
+
 * **シェフの気まぐれメニュー**: 記念日・季節・トレンドを軸に、SNS映えするメニューを動的に発想。  
   **Chef's Special**: Dynamically conceives SNS-worthy menus based on anniversaries, seasons, and trends.  
 * **方言一括翻訳 (JSON制御)**: ４種の方言をJSONフォーマットで厳密に管理し、破綻のない一括変換を実現。  
   **Dialect Translation (JSON Control)**: Strictly manages four dialects via JSON format to achieve flawless batch conversion.  
-
 
 ---
 
@@ -141,36 +145,48 @@ An overview of the core prompt design and control logic of this application.
 
 ## 📝 更新履歴  
 
+### v20.4 (UnReleased)  
+
+✅ 思い出すボタンを実装（Firestore版）  
+
 ### v20.1 (Current Release)  
+
 ✅ テキスト応答Geminiモデルを `gemini-2.5-flash-preview-09-2025` に変更  
 ✅ 画像生成Imagenモデルを `imagen-4.0-generate-001` に変更  
 
 ### v20.0 (UnReleased)  
+
 ☑️ 応急処置として `gemini-2.5-flash-preview-05-20` を `gemini-2.5-flash-image-preview` に変更  
 
 ### v19.9  
+
 ✅ 👩🏻‍🍳 シェフの気まぐれメニューにツールチップで由来を可視化  
 
 ### v19.8  
+
 ☑️ おまかせの初期値をOFFに変更  
 ☑️ Retryを３回から５回に変更  
 ☑️ ダウンロード時に選択状態にする  
 ✅ ツールチップにプロンプトを表示  
 
 ### v19.7  
+
 ☑️ 上に戻るボタンを追加  
 ✅ 拡大表示ボタンを追加  
 ☑️ プロンプトを少し変更（「あぁ、たまらん」など削除）  
 ✅ 👩🏻‍🍳３種類の提案メニューとおまかせボタンを追加  
 
 ### v19.6  
+
 ✨ Initial release on GitHub  
 ✅ 👩🏻‍🍳 シェフの気まぐれメニュー: "本日の記念日" "季節の彩り" "最近のトレンド" 実装  
 
 ### v19.5  
+
 ✅ 食レポ改善: オーバーリアクション、テンプレート感、淡々としてる文章からの脱却  
 
 ### v19.4  
+
 ☑️ ライセンス変更  
 ☑️ トーストメッセージを改善  
 ☑️ 献立が使えなくなっていたのを修正  
@@ -217,6 +233,7 @@ These have been confirmed to contain **VIRUSES or MALWARE**.
 This app is designed specifically for the Gemini Canvas environment and cannot be run as a standalone file.  
 
 ### ⚖️ 法的措置と通報について / Legal Action & Abuse Reports  
+
 当プロジェクトの制作物に対する無断転載が確認されたため、過去に **DMCA Take-down通知** を送付しています。  
 また、マルウェアを配布する悪質なサイトについては、順次 **各機関へ通報 (Malware / Abuse Report)** を行っています。  
 We have filed **DMCA Take-down notices** against unauthorized re-uploads of my projects.  
@@ -267,6 +284,7 @@ Furthermore, we are actively submitting **Malware / Abuse Reports** to relevant 
 <img src="https://www.google.com/s2/favicons?domain=github.com&size=16" alt="GitHub icon"> GitHub        :<a href="https://github.com/neon-aiart/">https://github.com/neon-aiart/</a>
 <img src="https://neon-aiart.github.io/favicon.ico" alt="neon-aiart icon" width="16" height="16"> GitHub Pages  :<a href="https://neon-aiart.github.io/">https://neon-aiart.github.io/</a>
 <img src="https://www.google.com/s2/favicons?domain=greasyfork.org&size=16" alt="Greasy Fork icon"> Greasy Fork   :<a href="https://greasyfork.org/ja/users/1494762/">https://greasyfork.org/ja/users/1494762/</a>
+<img src="https://www.google.com/s2/favicons?domain=zenn.dev&size=16" alt="Sizu icon"> Zenn Dev      :<a href="https://zenn.dev/neon_aiart/">https://zenn.dev/neon_aiart/</a>
 <img src="https://www.google.com/s2/favicons?domain=sizu.me&size=16" alt="Sizu icon"> Sizu Diary    :<a href="https://sizu.me/neon_aiart/">https://sizu.me/neon_aiart/</a>
 <img src="https://www.google.com/s2/favicons?domain=ofuse.me&size=16" alt="Ofuse icon"> Ofuse         :<a href="https://ofuse.me/neon/">https://ofuse.me/neon/</a>
 <img src="https://www.google.com/s2/favicons?domain=www.chichi-pui.com&size=16" alt="chichi-pui icon"> chichi-pui    :<a href="https://www.chichi-pui.com/users/neon/">https://www.chichi-pui.com/users/neon/</a>
