@@ -6,7 +6,7 @@
 AIモデル（**Imagen 4.0** & **Gemini 3 Flash**）を駆使し、見る者の食欲を限界まで刺激する高品質な料理イラストに加え、臨場感あふれる食レポや献立アイデアを生成できます。  
 
 This application is an ultimate "Appetite-Stimulating" image generation aid specifically designed for the **Google Gemini Canvas environment**.  
-Leveraging the AI models (**Imagen 4.0** & **Gemini 5 Flash**), it can generate high-quality food illustrations that push the viewer's appetite to the limit, along with immersive food reviews and meal planning ideas.  
+Leveraging the AI models (**Imagen 4.0** & **Gemini 3 Flash**), it can generate high-quality food illustrations that push the viewer's appetite to the limit, along with immersive food reviews and meal planning ideas.  
 
 ⭐ [スター](https://github.com/neon-aiart/meshi-art-maker/)をポチッとお願いします✨ (Please hit the [Star] button!)  
 
@@ -21,11 +21,18 @@ Leveraging the AI models (**Imagen 4.0** & **Gemini 5 Flash**), it can generate 
      The AI deeply understands the entered dish and automatically translates and expands it into high-definition English prompts that maximize the performance of Imagen 4.0.  
 
 2. 👩🏻‍🍳 **シェフの気まぐれメニュー / Chef's Special Menu**:  
-   * 「今日は何の日？」や季節・トレンドをAIが分析し、その日にぴったりの料理を【3種類】提案します。  
-   * **こだわり選択**: 提案された3つのメニューから、今の気分にぴったりの一皿を自分でチョイス。  
-   * **おまかせ全自動**: チェックボックスをオンにすれば、シェフが最高の一皿をランダムで選び、そのまま画像生成までノンストップで実行します。  
-     AI automatically analyzes "today's anniversaries," seasons, and trends to suggest 【3 different】 perfect dishes.  
-     Choose your favorite from the chef's recommendations, or enable "Full Auto" to let the chef pick and generate the image instantly.  
+    * **３つの提案**: AIが「今日は何の日？」や季節・トレンドを分析し、方向性の異なる３つのメニューを提案します  
+      **3 Different Suggestions**: AI analyzes "today's anniversaries," seasons, and trends to suggest 3 distinct dish ideas.  
+      * **こだわり選択**: 提案された３つのメニューから、今の気分にぴったりの一皿を自分で選ぶことができます  
+        **Manual Choice**: Hand-pick the perfect dish for your current mood from the 3 suggestions.  
+      * **おまかせ全自動**: チェックを入れれば、シェフが最高の一皿をランダムで選び、そのまま画像生成までノンストップで実行します  
+        **Full Auto Mode**: Enable this to let the chef randomly pick the best dish and jump straight into image generation.  
+    * **メニューの備忘録（思い出す）**: 直近の提案を最大30品までFirestoreに自動保存、あとで「やっぱりあっち！」と選び直せます  
+      **Reminiscence (History)**: Automatically saves the last 30 dish suggestions. Recall and re-select your favorites anytime.  
+      * **エクスポート＆インポート**: 大切なレシピはエクスポートでバックアップできます  
+        **Export & Import**: Keep your precious recipes safe by exporting them as a backup file.  
+    * **食材持ち込み**: 特定のテーマ（例：いちご、天ぷら）をシェフに伝えて、３つのアレンジメニューを提案してもらえます  
+      **Bring Your Own Ingredients**: Bring your own theme (e.g., "Strawberry") and let the chef suggest 3 unique variations.  
 
 3. 📝 **温度感のある食レポ＆インスピレーション献立 / Emotive Food Reviews & Inspired Meal Planning**:  
    * AI特有の定型文を排除し、一口ごとに溢れる「本音の独り言」のようなリアルな食レポを生成。さらに、画像からインスピレーションを得た献立アイデアも提案します。  
