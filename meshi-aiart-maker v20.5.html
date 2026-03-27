@@ -149,7 +149,7 @@
             font-size: 13px;
             line-height: 1.5;
             width: max-content;
-            pointer-events: auto; /* コピーできるようにマウス反応あり */
+            pointer-events: none; /* 基本はマウスを無視してすり抜ける */
             -webkit-user-select: text;
             user-select: text;
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
@@ -161,6 +161,7 @@
             visibility: visible;
             opacity: 1;
             transform: translateY(0); /* ホバー時に元の位置に戻す */
+            pointer-events: auto;     /* ホバーで表示されたときだけコピーできるように反応あり */
         }
 
         /* info と action */
@@ -393,7 +394,7 @@
                 <button id="trendSpecialBtn" class="bg-sky-500 hover:bg-sky-600 text-white font-semibold py-2 px-4 rounded-full shadow-lg transform transition-transform duration-200 hover:scale-105 disabled:bg-gray-500 disabled:cursor-not-allowed">
                     ⚡ 最近のトレンド
                 </button>
-                <button id="bringInBtn" class="bg-emerald-500 hover:bg-emerald-600 text-white font-semibold py-2 px-4 rounded-full shadow-lg transform transition-transform duration-200 hover:scale-105 disabled:bg-gray-500 disabled:cursor-not-allowed" disabled>
+                <button id="bringInBtn" class="bg-emerald-500 hover:bg-emerald-600 text-white font-semibold py-2 px-4 rounded-full shadow-lg transform transition-transform duration-200 hover:scale-105 disabled:bg-gray-500 disabled:cursor-not-allowed">
                     🍄 食材持ち込み
                 </button>
             </div>
@@ -547,13 +548,13 @@
 
     <script type="module">
         /* Copyright (c) 2025-2026 ねおん / Licensed under PolyForm Noncommercial 1.0.0 (https://polyformproject.org/licenses/noncommercial/1.0.0/) */
-        const APP_VERSION = '20.4';
+        const APP_VERSION = '20.5';
 
         // --- 定数とUI要素の取得 ---
         const API_KEY = ''; // APIキーはCanvas環境から提供されるので空のままでOK
-        const TRANSLATION_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${API_KEY}`;
+        const TRANSLATION_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${API_KEY}`;
         const IMAGE_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${API_KEY}`;
-        const LLM_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${API_KEY}`;
+        const LLM_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${API_KEY}`;
         const IMAGE_COUNT = 4; // 一度に生成する画像の数
 
         // --- グローバル変数 ---
@@ -1528,7 +1529,7 @@
          * @param {boolean} isLoading - 生成中か
          */
         const setGeneratingUIState = (isLoading) => {
-            const buttons = [generateBtn, recallMenuBtn, todaySpecialBtn, seasonalSpecialBtn, trendSpecialBtn, ];
+            const buttons = [generateBtn, recallMenuBtn, todaySpecialBtn, seasonalSpecialBtn, trendSpecialBtn, bringInBtn, ];
             buttons.forEach(btn => {
                 if (btn) {
                     btn.disabled = isLoading;
@@ -1550,9 +1551,10 @@
 
         /**
          * シェフの気まぐれメニューを提案し、自動で生成を開始する
-         * @param {string} type - 'anniversary' (記念日), 'seasonal' (季節), 'trend' (トレンド)
+         * @param {string} type - 'anniversary' (記念日), 'seasonal' (季節), 'trend' (トレンド), 'bringIn' (食材持ち込み)
+         * @param {string} bringInTheme - 持ち込まれた食材やテーマ
          */
-        const suggestChefMenu = async (type) => {
+        const suggestChefMenu = async (type, bringInTheme = '') => {
             if (generateBtn.disabled) {
                 return;
             }
@@ -1570,6 +1572,8 @@
                 typeContext = `${now.getMonth() + 1}月の季節感、旬の食材、その時期の天候にぴったりの彩り豊かな食べ物。`;
             } else if (type === 'trend') {
                 typeContext = '現在SNSでバズっている、あるいは食通の間で話題の、見た目のインパクトが強い最新フードトレンド。';
+            } else if (type === 'bringIn') {
+                typeContext = `ユーザーが持ち込んだ特別なテーマ「${bringInTheme}」に基づいた、最高に魅力的な食べ物。`;
             }
 
             const systemPrompt = 'あなたはトレンドに敏感な凄腕シェフ兼、食のキュレーターです。提示されたテーマに最適な料理を提案してください。';
@@ -1579,7 +1583,7 @@
                 1つは王道、1つは少し意外なもの、1つはシェフの遊び心が詰まったものにしてください。
                 3つとも同じような由来にならないように、由来のバリエーションを散らして
                 1つは注目度が高いもの、1つは意外なもの、1つはシェフの気まぐれに選んだものにしてください。
-                由来には、そのメニューを選んだ根拠を簡潔に記載してください。
+                由来には、${type === 'bringIn' ? `冒頭に「食材持ち込み：${bringInTheme}」と明記し、` : ''}そのメニューを選んだ根拠を簡潔に記載してください。
 
                 出力は必ず以下のJSONフォーマット（配列）のみで行ってください。
                 [
@@ -1934,6 +1938,36 @@
                 }));
                 container.appendChild(nav);
 
+                // --- 3. 注意事項（デザイン・構造をブラッシュアップしたわ！） ---
+                const caution = document.createElement('div');
+                caution.style.cssText = `
+                    font-size: 0.8rem;
+                    color: #d7ccc8;
+                    margin: 0 auto 20px auto;
+                    text-align: left;
+                    width: 96%;
+                    line-height: 1.6;
+                    background: #2d1b18; /* パネルより一段深い背景色 */
+                    border: 1px solid #5d4037;
+                    border-left: 4px solid #ffcc80; /* 左側にアクセントの警告色 */
+                    padding: 12px 14px;
+                    border-radius: 8px;
+                    box-sizing: border-box;
+                `;
+
+                caution.innerHTML = `
+                    <div style="display: flex; align-items: center; color: #ffcc80; font-size: 0.9rem; font-weight: bold; margin-bottom: 6px;">
+                        <span class="material-icons" style="margin-right: 5px;">report_problem</span>
+                        CAUTION
+                    </div>
+                    <div style="padding-left: 2px;">
+                        ・履歴は１週間程度で消える可能性があります（保存期間は非公表）<br>
+                        ・アップデートにより、以前のメニューが読み込めなくなる場合があります<br>
+                        ・大切なメニューは、<span style="color: #ffcc80; font-weight: bold;">エクスポート</span>でバックアップを推奨します
+                    </div>
+                `;
+                container.appendChild(caution);
+
                 // 閉じるボタン
                 const closeBtn = document.createElement('button');
                 closeBtn.innerText = '閉じる';
@@ -1986,7 +2020,7 @@
                                 const current = JSON.parse(localStorage.getItem('meshi_local_history') || '[]');
 
                                 // 2. 今のと新しいのを合体させて保存！
-                                localStorage.setItem('meshi_local_history', JSON.stringify([...current, ...imported]));
+                                localStorage.setItem('meshi_local_history', JSON.stringify([...current, ...imported,]));
 
                                 overlay.remove();
                                 showToast("思い出を統合したわ。リストを確認してね。", true);
@@ -2000,6 +2034,75 @@
                     input.click();
                 };
             });
+        };
+
+        /**
+         * 食材（テーマ）を持ち込んで、特注メニューをリクエストする
+         */
+        const bringInIngredients = () => {
+            const overlay = document.createElement('div');
+            overlay.style.cssText = `
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                background: rgba(0,0,0,0.7); z-index: 100000;
+                display: flex; align-items: center; justify-content: center;
+            `;
+
+            const panel = document.createElement('div');
+            panel.style.cssText = `
+                background: #4e342e; color: #fff9c4; padding: 24px;
+                border-radius: 16px; width: 90%; max-width: 400px;
+                border: 3px solid #ffcc80; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+                text-align: center; font-family: sans-serif;
+            `;
+
+            panel.innerHTML = `
+                <div style="font-weight: bold; margin-bottom: 15px; color: #ffcc80; font-size: 1.1rem;">
+                    👩🏻‍🍳 特注オーダー：食材・テーマを持ち込む
+                </div>
+                <input type="text" id="customThemeInput" placeholder="例：寿司、天ぷら、いちご祭り"
+                    style="width: 100%; padding: 12px; border-radius: 8px; border: 2px solid #795548;
+                    margin-bottom: 20px; font-size: 1rem; outline: none;
+                    background: #ffffff !important; color: #3e2723 !important;">
+                <div style="display: flex; gap: 10px;">
+                    <button id="orderBtn" style="flex: 1; padding: 12px; background: #cd853f;
+                        color: white; border: none; border-radius: 8px; font-weight: bold;
+                        cursor: pointer; box-shadow: 0 2px 0 #b14d00;">注文する</button>
+                    <button id="cancelOrderBtn" style="flex: 1; padding: 12px; background: transparent;
+                        color: #d7ccc8; border: 1px solid #6d4c41; border-radius: 8px;
+                        cursor: pointer;">やめる</button>
+                </div>
+            `;
+
+            document.body.appendChild(overlay);
+            overlay.appendChild(panel);
+
+            const input = panel.querySelector('#customThemeInput');
+
+            setTimeout(() => input.focus(), 10);
+
+            // 決定処理
+            const submit = async () => {
+                const val = input.value.trim();
+                if (val) {
+                    overlay.remove();
+                    await suggestChefMenu('bringIn', val);
+                } else {
+                    showToast("何か入力してくれないと作れないよ！", false);
+                }
+            };
+
+            panel.querySelector('#orderBtn').onclick = submit;
+            panel.querySelector('#cancelOrderBtn').onclick = () => overlay.remove();
+
+            input.onkeydown = (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    submit();
+                }
+                if (e.key === 'Escape') {
+                    overlay.remove();
+                }
+            };
         };
 
         // ギャル文字ON/OFFボタンがクリックされた時
@@ -2142,7 +2245,7 @@
          * 全ての操作ボタンを無効化する
          */
         const disableAllButtons = () => {
-            const buttons = [generateBtn, recallMenuBtn, todaySpecialBtn, seasonalSpecialBtn, trendSpecialBtn, ];
+            const buttons = [generateBtn, recallMenuBtn, todaySpecialBtn, seasonalSpecialBtn, trendSpecialBtn, bringInBtn, ];
             buttons.forEach(btn => {
                 if (btn) {
                     btn.disabled = true;
@@ -2155,7 +2258,7 @@
          * 全ての操作ボタンを有効化する
          */
         const enableAllButtons = () => {
-            const buttons = [generateBtn, recallMenuBtn, todaySpecialBtn, seasonalSpecialBtn, trendSpecialBtn, ];
+            const buttons = [generateBtn, recallMenuBtn, todaySpecialBtn, seasonalSpecialBtn, trendSpecialBtn, bringInBtn, ];
             buttons.forEach(btn => {
                 if (btn) {
                     btn.disabled = false;

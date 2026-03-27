@@ -1,12 +1,12 @@
-# 🍽️ 飯テロメーカー (Meshi Aiart Maker) v20.4  
+# 🍽️ 飯テロメーカー (Meshi Aiart Maker) v20.5  
 
 <img src="https://raw.githubusercontent.com/neon-aiart/meshi-art-maker/main/meshi_maker_20251101_235534.png" style="height: 200px; width: 200px; object-fit: contain;" align="right" alt="thumbnail" />
 
 このアプリケーションは、**GoogleのGemini Canvas環境**専用の、究極の「飯テロ」画像生成補助アプリです。  
-AIモデル（**Imagen 4.0** & **Gemini 2.5 Flash**）を駆使し、見る者の食欲を限界まで刺激する高品質な料理イラストに加え、臨場感あふれる食レポや献立アイデアを生成できます。  
+AIモデル（**Imagen 4.0** & **Gemini 3 Flash**）を駆使し、見る者の食欲を限界まで刺激する高品質な料理イラストに加え、臨場感あふれる食レポや献立アイデアを生成できます。  
 
 This application is an ultimate "Appetite-Stimulating" image generation aid specifically designed for the **Google Gemini Canvas environment**.  
-Leveraging the AI models (**Imagen 4.0** & **Gemini 2.5 Flash**), it can generate high-quality food illustrations that push the viewer's appetite to the limit, along with immersive food reviews and meal planning ideas.  
+Leveraging the AI models (**Imagen 4.0** & **Gemini 5 Flash**), it can generate high-quality food illustrations that push the viewer's appetite to the limit, along with immersive food reviews and meal planning ideas.  
 
 ⭐ [スター](https://github.com/neon-aiart/meshi-art-maker/)をポチッとお願いします✨ (Please hit the [Star] button!)  
 
@@ -46,12 +46,13 @@ Leveraging the AI models (**Imagen 4.0** & **Gemini 2.5 Flash**), it can generat
 以下のリンクから、Gemini Canvas環境で直接アプリをご利用ください。  
 Please use the app directly in the Gemini Canvas environment via the link below.  
 
-🍴 **[飯テロメーカーを試す / Try Meshi Art Maker](https://gemini.google.com/share/fa237f56bf25)** 🍴  
+🍴 **[飯テロメーカーを試す / Try Meshi Art Maker](https://gemini.google.com/share/365339576f14)** 🍴  
 <!-- STATUS_START -->
 share link last update: 2026-02-19 (13 days ago)  
 <!-- STATUS_END -->
 
 **Old Version**:  
+v20.1 (2026-02-20) [https://gemini.google.com/share/fa237f56bf25](https://gemini.google.com/share/fa237f56bf25)  
 v20.0 (2026-02-19) [https://gemini.google.com/share/71ce1dcf42c4](https://gemini.google.com/share/71ce1dcf42c4)  
 
 ### ⚠️ 動作環境 / Environment & Benefits  
@@ -118,6 +119,20 @@ An overview of the core prompt design and control logic of this application.
 * **方言一括翻訳 (JSON制御)**: ４種の方言をJSONフォーマットで厳密に管理し、破綻のない一括変換を実現。  
   **Dialect Translation (JSON Control)**: Strictly manages four dialects via JSON format to achieve flawless batch conversion.  
 
+> [!Caution]  
+>
+> 【シェフからの大切なお知らせ: 思い出す（Firestore版）について】  
+>
+> * 履歴は１週間程度で消える可能性があります（保存期間は非公表）  
+> * アップデートなどにより、以前に保存したメニューが読み込めなくなる場合があります  
+> * 大切なメニューは、**エクスポート**でバックアップを推奨します  
+>
+> 【Special Note from the Chef: Regarding "Reminiscence" (Firestore Edition)】
+>
+> * The history retention period is unannounced (data may be cleared after about a week).  
+> * Previously saved menus may become unreadable due to system updates or structural changes.  
+> * We highly recommend using the "Export" feature to back up your precious recipes.  
+
 ---
 
 ### 📺 紹介動画 (Overview Video)  
@@ -145,16 +160,21 @@ An overview of the core prompt design and control logic of this application.
 
 ## 📝 更新履歴  
 
+### [v20.5](https://gemini.google.com/share/365339576f14) (Current Release)  
+
+✅ テキスト応答Geminiモデルを `gemini-3-flash-preview` に変更  
+✅ 食材持ち込みボタンを実装  
+
 ### v20.4 (UnReleased)  
 
 ✅ 思い出すボタンを実装（Firestore版）  
 
-### v20.1 (Current Release)  
+### [v20.1](https://gemini.google.com/share/fa237f56bf25)  
 
 ✅ テキスト応答Geminiモデルを `gemini-2.5-flash-preview-09-2025` に変更  
 ✅ 画像生成Imagenモデルを `imagen-4.0-generate-001` に変更  
 
-### v20.0 (UnReleased)  
+### [v20.0](https://gemini.google.com/share/71ce1dcf42c4) (UnReleased)  
 
 ☑️ 応急処置として `gemini-2.5-flash-preview-05-20` を `gemini-2.5-flash-image-preview` に変更  
 
