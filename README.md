@@ -123,14 +123,14 @@ An overview of the core prompt design and control logic of this application.
 >
 > 【シェフからの大切なお知らせ: 思い出す（Firestore版）について】  
 >
-> * 履歴は最大30品まで保存され、古いものから自動的に上書きされます  
+> * 履歴は**最大30品**まで保存され、古いものから自動的に上書きされます  
 > * 履歴は１週間程度で消える可能性があります（保存期間は非公表）  
 > * アップデートなどにより、以前に保存したメニューが読み込めなくなる場合があります  
 > * 大切なメニューは、**エクスポート**でバックアップを推奨します  
 >
 > 【Special Note from the Chef: Regarding "Reminiscence" (Firestore Edition)】
 >
-> * The history stores a maximum of 30 dishes. Older entries will be automatically replaced.  
+> * The history stores **a maximum of 30 dishes**. Older entries will be automatically replaced.  
 > * The history retention period is unannounced (data may be cleared after about a week).  
 > * Previously saved menus may become unreadable due to system updates or structural changes.  
 > * We highly recommend using the "Export" feature to back up your precious recipes.  
