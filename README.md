@@ -1,4 +1,4 @@
-# 🍽️ 飯テロメーカー (Meshi Aiart Maker) v20.5  
+# 🍽️ 飯テロメーカー (Meshi Aiart Maker) v20.6  
 
 <img src="https://raw.githubusercontent.com/neon-aiart/meshi-art-maker/main/meshi_maker_20251101_235534.png" style="height: 200px; width: 200px; object-fit: contain;" align="right" alt="thumbnail" />
 
@@ -123,12 +123,14 @@ An overview of the core prompt design and control logic of this application.
 >
 > 【シェフからの大切なお知らせ: 思い出す（Firestore版）について】  
 >
+> * 履歴は**最大30品**まで保存され、古いものから自動的に上書きされます  
 > * 履歴は１週間程度で消える可能性があります（保存期間は非公表）  
 > * アップデートなどにより、以前に保存したメニューが読み込めなくなる場合があります  
 > * 大切なメニューは、**エクスポート**でバックアップを推奨します  
 >
 > 【Special Note from the Chef: Regarding "Reminiscence" (Firestore Edition)】
 >
+> * The history stores **a maximum of 30 dishes**. Older entries will be automatically replaced.  
 > * The history retention period is unannounced (data may be cleared after about a week).  
 > * Previously saved menus may become unreadable due to system updates or structural changes.  
 > * We highly recommend using the "Export" feature to back up your precious recipes.  
@@ -147,18 +149,22 @@ An overview of the core prompt design and control logic of this application.
 <details><summary>
     🇯🇵 日本語版を表示 (View Japanese Version)
 </summary>
-<img src="meshi-aiart-maker-info-jp.png" alt="Infographic JP" width="100%">
+<img src="meshi-aiart-maker-info-jp-v2.png" alt="Infographic JP" width="100%">
 </details>
 
 <details><summary>
     🇺🇸 English Version (View English Version)
 </summary>
-<img src="meshi-aiart-maker-info-en.png" alt="Infographic EN" width="100%">
+<img src="meshi-aiart-maker-info-en-v2.png" alt="Infographic EN" width="100%">
 </details>
 
 ---
 
-## 📝 更新履歴  
+## 📝 更新履歴 (Changelog)  
+
+### v20.6  
+
+- 思い出すボタン（外部連携版）を実装  
 
 ### [v20.5](https://gemini.google.com/share/365339576f14) (Current Release)  
 
