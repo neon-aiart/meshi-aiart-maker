@@ -28,58 +28,6 @@
     <!-- フォントとアイコンのCDNを読み込み -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <!-- Firebase Libraries -->
-    <script type="module">
-        // Firebaseの各機能をインポート
-        import { initializeApp, } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
-        import { getFirestore, doc, getDoc, addDoc, setDoc, updateDoc, deleteDoc, onSnapshot, collection, query, where, getDocs, } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
-        import { getStorage, ref, uploadString, getDownloadURL, } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js';
-        import { setLogLevel, } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
-
-        // --- Firebase Global Variables (Provided by Canvas) ---
-        // これらの変数はCanvas環境から自動で提供されるため、編集しないでください。
-        const appId = typeof window.__app_id !== 'undefined' ? window.__app_id : 'default-app-id';
-        const firebaseConfig = typeof window.__firebase_config !== 'undefined' ? JSON.parse(window.__firebase_config) : {};
-        const initialAuthToken = typeof window.__initial_auth_token !== 'undefined' ? window.__initial_auth_token : '';
-
-        // Firebaseのグローバル変数を設定
-        window.firebase = {
-            initializeApp,
-            getAuth,
-            signInAnonymously,
-            signInWithCustomToken,
-            onAuthStateChanged,
-            getFirestore,
-            doc,
-            getDoc,
-            addDoc,
-            setDoc,
-            updateDoc,
-            deleteDoc,
-            onSnapshot,
-            collection,
-            query,
-            where,
-            getDocs,
-        };
-
-        // Firebase初期化
-        window.app = initializeApp(firebaseConfig);
-        window.db = getFirestore(window.app);
-        window.auth = getAuth(window.app);
-        setLogLevel('debug');
-
-        // Custom tokenでサインイン、失敗したら匿名でサインイン
-        if (initialAuthToken.length > 0) {
-            signInWithCustomToken(window.auth, initialAuthToken).catch((error) => {
-                console.error('Custom token sign-in failed:', error);
-                signInAnonymously(window.auth);
-            });
-        } else {
-            signInAnonymously(window.auth);
-        }
-    </script>
     <style>
         /* 全体のスタイル設定 */
         body {
@@ -201,7 +149,7 @@
             font-size: 13px;
             line-height: 1.5;
             width: max-content;
-            pointer-events: auto; /* コピーできるようにマウス反応あり */
+            pointer-events: none; /* 基本はマウスを無視してすり抜ける */
             -webkit-user-select: text;
             user-select: text;
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
@@ -213,6 +161,7 @@
             visibility: visible;
             opacity: 1;
             transform: translateY(0); /* ホバー時に元の位置に戻す */
+            pointer-events: auto;     /* ホバーで表示されたときだけコピーできるように反応あり */
         }
 
         /* info と action */
@@ -400,7 +349,7 @@
                 例：ラーメン、チョコレートパフェ、チーズバーガー
             </p>
             <!-- ユーザーID表示 -->
-            <div class="text-sm text-gray-500 mt-2" hidden>
+            <div class="text-sm text-gray-500 mt-2">
                 ユーザーID: <span id="userIdDisplay" class="text-xs break-all">認証中...</span>
             </div>
         </header>
@@ -429,18 +378,27 @@
                 <input type="text" id="backgroundInput" placeholder="背景や雰囲気 （例: 夜景、高級レストラン、明るいカフェ）" autocomplete="off" class="text-input w-full bg-gray-700 p-3 rounded-full text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-amber-500">
             </div>
             <!-- シェフの気まぐれメニュー -->
-            <span class="inline-flex items-center">👩🏻‍🍳 シェフの気まぐれメニュー: &nbsp; <input type="checkbox" id="chefMoodCheckbox" aria-label="chefMoodCheckbox"> &nbsp; おまかせ</span>
+            <div class="flex flex-row items-center justify-between text-sm px-4">
+                <span class="inline-flex items-center">👩🏻‍🍳 シェフの気まぐれメニュー: &nbsp; <input type="checkbox" id="chefMoodCheckbox" aria-label="chefMoodCheckbox"> &nbsp; おまかせ</span>
+                <button id="recallMenuBtn" class="bg-purple-400 hover:bg-purple-500 text-white font-semibold py-2 px-4 rounded-full shadow-lg transform transition-transform duration-200 hover:scale-105 disabled:bg-gray-500 disabled:cursor-not-allowed">
+                    📋 思い出す
+                </button>
+            </div>
             <div class="flex flex-row text-sm space-x-2 justify-center">
                 <button id="todaySpecialBtn" class="bg-fuchsia-400 hover:bg-fuchsia-500 text-white font-semibold py-2 px-4 rounded-full shadow-lg transform transition-transform duration-200 hover:scale-105 disabled:bg-gray-500 disabled:cursor-not-allowed">
                     📅 本日の記念日
                 </button>
-                <button id="seasonalSpecialBtn" class="bg-sky-500 hover:bg-sky-600 text-white font-semibold py-2 px-4 rounded-full shadow-lg transform transition-transform duration-200 hover:scale-105 disabled:bg-gray-500 disabled:cursor-not-allowed">
+                <button id="seasonalSpecialBtn" class="bg-cyan-500 hover:bg-cyan-600 text-white font-semibold py-2 px-4 rounded-full shadow-lg transform transition-transform duration-200 hover:scale-105 disabled:bg-gray-500 disabled:cursor-not-allowed">
                     🌸 季節の彩り
                 </button>
-                <button id="trendSpecialBtn" class="bg-emerald-500 hover:bg-emerald-600 text-white font-semibold py-2 px-4 rounded-full shadow-lg transform transition-transform duration-200 hover:scale-105 disabled:bg-gray-500 disabled:cursor-not-allowed">
+                <button id="trendSpecialBtn" class="bg-sky-500 hover:bg-sky-600 text-white font-semibold py-2 px-4 rounded-full shadow-lg transform transition-transform duration-200 hover:scale-105 disabled:bg-gray-500 disabled:cursor-not-allowed">
                     ⚡ 最近のトレンド
                 </button>
+                <button id="bringInBtn" class="bg-emerald-500 hover:bg-emerald-600 text-white font-semibold py-2 px-4 rounded-full shadow-lg transform transition-transform duration-200 hover:scale-105 disabled:bg-gray-500 disabled:cursor-not-allowed">
+                    🍄 食材持ち込み
+                </button>
             </div>
+
         </div>
 
         <!-- ロード中のアニメーション -->
@@ -590,19 +548,26 @@
 
     <script type="module">
         /* Copyright (c) 2025-2026 ねおん / Licensed under PolyForm Noncommercial 1.0.0 (https://polyformproject.org/licenses/noncommercial/1.0.0/) */
-        const APP_VERSION = '20.1';
-
-        // Firebaseライブラリをインポート
-        import { getAuth, onAuthStateChanged, } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
-        import { setLogLevel, } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
-        import { getStorage, ref, uploadString, getDownloadURL, } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js';
+        const APP_VERSION = '20.5';
 
         // --- 定数とUI要素の取得 ---
         const API_KEY = ''; // APIキーはCanvas環境から提供されるので空のままでOK
-        const TRANSLATION_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${API_KEY}`;
+        const TRANSLATION_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${API_KEY}`;
         const IMAGE_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${API_KEY}`;
-        const LLM_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${API_KEY}`;
+        const LLM_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${API_KEY}`;
         const IMAGE_COUNT = 4; // 一度に生成する画像の数
+
+        // --- グローバル変数 ---
+        let userId = null;              // ユーザーIDを保存
+        let selectedImageBase64 = null; // 選択された画像のBase64データを保存
+        let isGeneratingText = false;   // テキスト生成中かどうかを示すフラグ
+        let currentImagePrompt = null;  // 現在の画像生成プロンプトを保存
+        let originalText = '';          // AIが生成した元の文章
+        let translatedTextCache = {};
+        let currentTransformMode = null;
+        let toastTimeoutId = null;      // トースト表示のタイマー管理
+        let copyTimer = null;           // アイコン復元用のタイマー管理
+        let originalIconContent = null; // アイコンの原型を保存
 
         // HTMLから操作したい要素をまとめて取得
         document.title = `🍽️ 飯テロメーカー v${APP_VERSION}`;
@@ -630,11 +595,144 @@
         const hakataToggleBtn = document.getElementById('hakataToggleBtn');
         const tsugaruToggleBtn = document.getElementById('tsugaruToggleBtn');
         const uchinaguchiToggleBtn = document.getElementById('uchinaguchiToggleBtn');
+        const chefMoodCheckbox = document.getElementById('chefMoodCheckbox');
+        const recallMenuBtn = document.getElementById('recallMenuBtn');
         const todaySpecialBtn = document.getElementById('todaySpecialBtn');
         const seasonalSpecialBtn = document.getElementById('seasonalSpecialBtn');
         const trendSpecialBtn = document.getElementById('trendSpecialBtn');
-        const chefMoodCheckbox = document.getElementById('chefMoodCheckbox');
+        const bringInBtn = document.getElementById('bringInBtn');
         const scrollToTopBtn = document.getElementById('scroll-to-top-btn');
+
+        // --- Firebase Libraries ---
+        // 1. FirestoreとAuthのみをインポート
+        import { initializeApp, } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
+        import {
+            getAuth,
+            signInAnonymously,
+            signInWithCustomToken,
+            onAuthStateChanged,
+        } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
+        import {
+            getFirestore,
+            doc,
+            getDoc,
+            setDoc,
+            updateDoc,
+            deleteDoc,
+            serverTimestamp,
+            setLogLevel,
+        } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
+
+        // 2. 環境変数とApp IDの取得
+        // コードが変わると __app_id が変わる仕様を逆手に取って、これを保存パスに組み込むわ
+        const firebaseConfig = typeof window.__firebase_config !== 'undefined' ? JSON.parse(window.__firebase_config) : {};
+        const initialAuthToken = typeof window.__initial_auth_token !== 'undefined' ? window.__initial_auth_token : '';
+        const appId = typeof window.__app_id !== 'undefined' ? window.__app_id : 'meshi-aiart-maker';
+
+        // 3. グローバル展開（window.firebase）
+        window.firebase = {
+            initializeApp, getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged,
+            getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, serverTimestamp,
+        };
+
+        // 4. 初期化
+        try {
+            window.app = initializeApp(firebaseConfig);
+            window.db = getFirestore(window.app);
+            window.auth = getAuth(window.app);
+            setLogLevel('error');
+        } catch (e) {
+            console.error("Firebase初期化エラー:", e);
+        }
+
+        // 5. 認証処理
+        const login = async () => {
+            if (!window.auth) {
+                return;
+            }
+            try {
+                if (initialAuthToken) {
+                    await signInWithCustomToken(window.auth, initialAuthToken);
+                } else {
+                    await signInAnonymously(window.auth);
+                }
+            } catch (error) {
+                console.error('SignIn failed:', error);
+                signInAnonymously(window.auth);
+            }
+        };
+        login();
+
+        // 6. 認証状態の監視 & 履歴読み込みのトリガー
+        onAuthStateChanged(window.auth, (user) => {
+            if (user) {
+                window.userId = user.uid;
+                if (userIdDisplay) {
+                    userIdDisplay.textContent = user.uid;
+                }
+                if (generateBtn) {
+                    generateBtn.disabled = false;
+                }
+                if (recallMenuBtn) {
+                    recallMenuBtn.disabled = false;
+                }
+
+                // ログイン成功時に、パスを確定させるわ
+                // 付箋アプリの成功パターン： artifacts / {appId} / public / data / user_history / {userId}
+                window.historyDocPath = ['artifacts', appId, 'public', 'data', 'user_history', user.uid,];
+            } else {
+                window.userId = null;
+                if (userIdDisplay) {
+                    userIdDisplay.textContent = "認証中...";
+                }
+            }
+        });
+
+        // 7. ハイブリッド保存関数
+        window.saveToHistory = async (suggestions) => {
+            // 認証が終わっていなかったり、提案が空なら何もしないわ
+            if (!window.userId || !suggestions || suggestions.length === 0) {
+                return;
+            }
+
+            // 保存するデータ構造を整えるわ
+            const newEntry = {
+                items: suggestions, // [ {food, background, source}, ... ] の配列
+                timestamp: Date.now(),
+            };
+
+            // --- A. LocalStorageへの保存 (コード変更時の保険) ---
+            try {
+                let localHistory = JSON.parse(localStorage.getItem('meshi_local_history') || '[]');
+                localHistory.unshift(newEntry);
+                // 30件くらいがちょうどいいわね
+                localStorage.setItem('meshi_local_history', JSON.stringify(localHistory.slice(0, 30)));
+            } catch (e) {
+                console.warn("LocalStorage保存失敗:", e);
+            }
+
+            // --- B. Firestoreへの保存 (別端末・共有リンク用) ---
+            try {
+                // 付箋アプリで成功した「安全なパス」を使うわよ
+                const docRef = window.firebase.doc(window.db, ...window.historyDocPath);
+
+                // 最新のデータを取得
+                const docSnap = await window.firebase.getDoc(docRef);
+                let cloudMeals = docSnap.exists() ? docSnap.data().meals || [] : [];
+
+                cloudMeals.unshift(newEntry);
+
+                await window.firebase.setDoc(docRef, {
+                    meals: cloudMeals.slice(0, 30),
+                    lastUpdated: window.firebase.serverTimestamp(),
+                }, { merge: true, });
+
+                // console.log("思い出、クラウドにも刻んでおいたわよ✨");
+            } catch (e) {
+                // ここでエラーが出るなら、まだパスの権限が足りない可能性があるわ
+                console.error("Firestore保存失敗:", e);
+            }
+        };
 
         // スクロール監視：200px以上で表示
         window.addEventListener('scroll', () => {
@@ -660,37 +758,11 @@
         tsugaruToggleBtn.addEventListener('click', () => handleDialectClick('津軽弁', tsugaruToggleBtn, 'text-sky-400'));
         uchinaguchiToggleBtn.addEventListener('click', () => handleDialectClick('うちなーぐち', uchinaguchiToggleBtn, 'text-orange-400'));
 
+        recallMenuBtn.addEventListener('click', () => showRecallModal());
         todaySpecialBtn.addEventListener('click', () => suggestChefMenu('anniversary'));
         seasonalSpecialBtn.addEventListener('click', () => suggestChefMenu('seasonal'));
         trendSpecialBtn.addEventListener('click', () => suggestChefMenu('trend'));
-
-        // --- グローバル変数 ---
-        let userId = null;              // ユーザーIDを保存
-        let selectedImageBase64 = null; // 選択された画像のBase64データを保存
-        let isGeneratingText = false;   // テキスト生成中かどうかを示すフラグ
-        let currentImagePrompt = null;  // 現在の画像生成プロンプトを保存
-        let originalText = '';          // AIが生成した元の文章
-        let translatedTextCache = {};
-        let currentTransformMode = null;
-        let toastTimeoutId = null;      // トースト表示のタイマー管理
-        let copyTimer = null;           // アイコン復元用のタイマー管理
-        let originalIconContent = null; // アイコンの原型を保存
-        const storage = getStorage(window.app); // window.app が Firebase の初期化インスタンスと仮定
-
-        // --- Firebase認証 ---
-        // ユーザーのログイン状態を監視して、ユーザーIDを取得
-        onAuthStateChanged(window.auth, async (user) => {
-            if (user) {
-                // ログイン済みの場合は、そのユーザーIDを使用
-                userId = user.uid || crypto.randomUUID();
-                userIdDisplay.textContent = userId;
-            } else {
-                // 未ログインの場合は、ランダムなIDを一時的に使用
-                userId = crypto.randomUUID();
-                userIdDisplay.textContent = userId;
-            }
-            generateBtn.disabled = false; // 認証が完了したら生成ボタンを有効化
-        });
+        bringInBtn.addEventListener('click', () => bringInIngredients());
 
         // --- API通信 ---
 
@@ -1153,7 +1225,8 @@
 
         // ========= トーストメッセージを表示する関数 =========
         // @param {string} msg - 表示するメッセージ
-        // @param {boolean|null} isSuccess - 成功したかどうかのフラグ (nullの場合は探索中)
+        // @param {boolean|null} isSuccess - 成功
+        // したかどうかのフラグ (nullの場合は探索中)
         function showToast(msg, isSuccess) {
             const toastId = 'meshi-toast';
             console.log(`[TOAST] ${msg}`);
@@ -1456,7 +1529,7 @@
          * @param {boolean} isLoading - 生成中か
          */
         const setGeneratingUIState = (isLoading) => {
-            const buttons = [generateBtn, todaySpecialBtn, seasonalSpecialBtn, trendSpecialBtn,];
+            const buttons = [generateBtn, recallMenuBtn, todaySpecialBtn, seasonalSpecialBtn, trendSpecialBtn, bringInBtn, ];
             buttons.forEach(btn => {
                 if (btn) {
                     btn.disabled = isLoading;
@@ -1478,9 +1551,10 @@
 
         /**
          * シェフの気まぐれメニューを提案し、自動で生成を開始する
-         * @param {string} type - 'anniversary' (記念日), 'seasonal' (季節), 'trend' (トレンド)
+         * @param {string} type - 'anniversary' (記念日), 'seasonal' (季節), 'trend' (トレンド), 'bringIn' (食材持ち込み)
+         * @param {string} bringInTheme - 持ち込まれた食材やテーマ
          */
-        const suggestChefMenu = async (type) => {
+        const suggestChefMenu = async (type, bringInTheme = '') => {
             if (generateBtn.disabled) {
                 return;
             }
@@ -1492,11 +1566,14 @@
 
             let typeContext = '';
             if (type === 'anniversary') {
-                typeContext = `${dateStr}の「今日は何の日」や記念日にちなんだ、写真映えする食べ物。`;
+                typeContext = `${dateStr}の「今日は何の日」や記念日にちなんだ、写真映えする食べ物。
+                                必ず、その日が本当にその記念日であることを再確認し、事実に基づいたメニューを提案してください。`;
             } else if (type === 'seasonal') {
                 typeContext = `${now.getMonth() + 1}月の季節感、旬の食材、その時期の天候にぴったりの彩り豊かな食べ物。`;
             } else if (type === 'trend') {
                 typeContext = '現在SNSでバズっている、あるいは食通の間で話題の、見た目のインパクトが強い最新フードトレンド。';
+            } else if (type === 'bringIn') {
+                typeContext = `ユーザーが持ち込んだ特別なテーマ「${bringInTheme}」に基づいた、最高に魅力的な食べ物。`;
             }
 
             const systemPrompt = 'あなたはトレンドに敏感な凄腕シェフ兼、食のキュレーターです。提示されたテーマに最適な料理を提案してください。';
@@ -1506,7 +1583,7 @@
                 1つは王道、1つは少し意外なもの、1つはシェフの遊び心が詰まったものにしてください。
                 3つとも同じような由来にならないように、由来のバリエーションを散らして
                 1つは注目度が高いもの、1つは意外なもの、1つはシェフの気まぐれに選んだものにしてください。
-                由来には、そのメニューを選んだ根拠を簡潔に記載してください。
+                由来には、${type === 'bringIn' ? `冒頭に「食材持ち込み：${bringInTheme}」と明記し、` : ''}そのメニューを選んだ根拠を簡潔に記載してください。
 
                 出力は必ず以下のJSONフォーマット（配列）のみで行ってください。
                 [
@@ -1548,6 +1625,7 @@
 
                 // --- JSONを解析 ---
                 const suggestions = JSON.parse(cleanJsonText);
+                await window.saveToHistory(suggestions);
 
                 let selected;
                 if (chefMoodCheckbox.checked) {
@@ -1683,31 +1761,349 @@
         };
 
         /**
-         * Base64画像をFirebase Cloud Storageにアップロードし、ダウンロードURLを返す
-         * @param {string} base64Image - アップロードする画像のBase64データ
-         * @param {string} userId - 認証済みのユーザーID (user.uid)
-         * @returns {Promise<string>} ダウンロード可能なURL
+         * 思い出（履歴）を呼び出すモーダルを表示するコンパクト版（１ページ６項目）
          */
-        async function uploadToCloudStorage(base64Image, userId) {
-            if (!userId || userId === '認証中...') {
-                throw new Error('ユーザー認証が完了していません。画像を保存できません。');
+        const showRecallModal = async (page = 0) => {
+            // 1. ユーザー認証チェック（Firestore利用に必須）
+            const currentUid = window.userId ||
+                (window.auth?.currentUser ? window.auth.currentUser.uid : null);
+
+            if (!currentUid) {
+                showToast("認証中よ。少し待ってからやり直してね。", false);
+                return;
             }
 
-            // Cloud Storage内の保存パスを決定 (例: users/{userId}/{timestamp}.png)
-            const timestamp = Date.now();
-            const storageRef = ref(storage, `users/${userId}/${timestamp}.png`);
+            let allItems = [];
+            let currentLocalHistory = [];
 
-            // Base64データをアップロード (data_url形式でアップロード)
-            const dataUrl = `data:image/png;base64,${base64Image}`;
+            try {
+                // A. LocalStorage から取得
+                currentLocalHistory = JSON.parse(localStorage.getItem('meshi_local_history') || '[]');
 
-            // Base64でのアップロード実行
-            const snapshot = await uploadString(storageRef, dataUrl, 'data_url');
+                // B. Firestore から取得
+                let cloudData = [];
+                try {
+                    const docRef = window.firebase.doc(window.db, ...window.historyDocPath);
+                    const docSnap = await window.firebase.getDoc(docRef);
+                    if (docSnap.exists()) {
+                        cloudData = docSnap.data().meals || [];
+                    }
+                } catch (err) {
+                    console.warn("クラウドデータの取得に失敗:", err);
+                }
 
-            // ダウンロードURLを取得
-            const downloadURL = await getDownloadURL(snapshot.ref);
+                // C. データの統合とフラット化（重複排除）
+                const map = new Map();
+                [...currentLocalHistory, ...cloudData,].forEach(entry => {
+                    const items = entry.items || [entry,];
+                    const ts = entry.timestamp || Date.now();
+                    items.forEach(item => {
+                        const key = `${item.food}_${ts}`;
+                        if (!map.has(key)) {
+                            map.set(key, { ...item, timestamp: ts, });
+                        }
+                    });
+                });
 
-            return downloadURL;
-        }
+                allItems = Array.from(map.values()).sort((a, b) => b.timestamp - a.timestamp);
+            } catch (e) {
+                console.error("思い出の読み込みエラー:", e);
+                showToast("データが壊れているみたい...", false);
+                return;
+            }
+
+            // 2. UI構築
+            const itemsPerPage = 6;
+            const totalPages = Math.max(1, Math.ceil(allItems.length / itemsPerPage)); // 最小でも1ページ
+            const displayItems = allItems.slice(page * itemsPerPage, (page + 1) * itemsPerPage);
+
+            return new Promise((resolve) => {
+                const overlay = document.createElement('div');
+                overlay.style.cssText = `
+                    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                    background: rgba(0,0,0,0.75); z-index: 10000;
+                    display: flex; align-items: center; justify-content: center;
+                    font-family: sans-serif; backdrop-filter: blur(4px);
+                    box-sizing: border-box;
+                `;
+
+                const container = document.createElement('div');
+                container.style.cssText = `
+                    background: #3e2723; color: #fff9c4; padding: 20px;
+                    border-radius: 16px; width: 90%; max-width: 500px;
+                    box-shadow: 0 12px 40px rgba(0,0,0,0.6); border: 1px solid #5d4037;
+                    box-sizing: border-box;
+                `;
+
+                // ヘッダー（出力・入力ボタン込み）
+                const header = document.createElement('div');
+                header.style.cssText = `
+                    display: flex; justify-content: space-between;
+                    align-items: center; margin-bottom: 15px;
+                `;
+                header.innerHTML = `
+                    <span style="font-weight: bold; color: #ffcc80;">📖 メニューの備忘録 (${page + 1}/${totalPages})</span>
+                    <div style="display: flex; gap: 8px; flex-shrink: 0;">
+                        <button id="exportHistory" style="background: #5d4037; border: 1px solid #795548; color: #d7ccc8; font-size: 0.8rem; cursor: pointer; padding: 2px 6px; border-radius: 4px; transition: background 0.2s;">エクスポート</button>
+                        <button id="importHistory" style="background: #5d4037; border: 1px solid #795548; color: #d7ccc8; font-size: 0.8rem; cursor: pointer; padding: 2px 6px; border-radius: 4px; transition: background 0.2s;">インポート</button>
+                    </div>
+                `;
+                container.appendChild(header);
+
+                // ホバーイベントの設定（要素を取得してから当てるわね）
+                const exportBtn = header.querySelector('#exportHistory');
+                const importBtn = header.querySelector('#importHistory');
+
+                [exportBtn, importBtn, ].forEach(btn => {
+                    btn.onmouseover = () => btn.style.background = '#795548'; // 少し明るく
+                    btn.onmouseout = () => btn.style.background = '#5d4037';  // 元の色に
+                });
+
+                // リスト表示
+                const list = document.createElement('div');
+                list.style.cssText = `
+                    display: grid;
+                    grid-template-columns: repeat(1, minmax(0, 1fr));
+                    gap: 8px;
+                    margin-bottom: 15px;
+                    box-sizing: border-box;
+                `;
+
+                if (allItems.length === 0) {
+                    // 空の時のメッセージ
+                    list.innerHTML = `
+                        <div style="text-align: center; padding: 30px 10px; color: #a1887f; font-size: 1rem; line-height: 1.6;">
+                            まだ思い出がないみたい。<br>
+                            右上の「インポート」から過去のデータを<br>
+                            連れてくることができるわよ。
+                        </div>
+                    `;
+                    showToast("まだ思い出が何もないみたいね。", false);
+                } else {
+                    displayItems.forEach(item => {
+                        const btn = document.createElement('div');
+                        btn.style.cssText = `
+                            background: #4e342e; padding: 12px; border-radius: 10px;
+                            border: 1px solid #6d4c41; cursor: pointer;
+                            display: flex; justify-content: space-between; align-items: center;
+                            transition: 0.2s; box-sizing: border-box;
+                        `;
+                        btn.onmouseover = () => btn.style.background = '#5d4037';
+                        btn.onmouseout = () => btn.style.background = '#4e342e';
+
+                        btn.innerHTML = `
+                            <div style="font-size: 0.85rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1;">
+                                ${item.food}
+                            </div>
+                            <div class="tooltip" style="margin-left: 5px; display: flex; align-items: center;">
+                                <span class="material-icons" style="font-size: 1rem; color: #ffcc80;">info</span>
+                                <span class="tooltiptext chef-tooltip">${item.source || '不明'}</span>
+                            </div>
+                        `;
+
+                        btn.onclick = (e) => {
+                            if (e.target.closest('.tooltip')) {
+                                return;
+                            }
+                            promptInput.value = item.food;
+                            if (window.backgroundInput) {
+                                backgroundInput.value = item.background || '';
+                            }
+                            overlay.remove();
+                            showToast(`👩🏻‍🍳：${item.food.substring(0, 20)}`, true);
+                        };
+                        list.appendChild(btn);
+                    });
+                }
+                container.appendChild(list);
+
+                // ナビゲーション
+                const nav = document.createElement('div');
+                nav.style.cssText = 'display: flex; justify-content: center; gap: 20px; align-items: center; margin-bottom: 15px;';
+
+                const createNavBtn = (text, disabled, onClick) => {
+                    const b = document.createElement('button');
+                    b.innerText = text;
+                    b.disabled = disabled;
+                    b.style.cssText = `background: transparent; border: none; color: ${disabled ? '#795548' : '#ffcc80'}; cursor: ${disabled ? 'default' : 'pointer'}; font-weight: bold;`;
+                    b.onclick = onClick;
+                    return b;
+                };
+
+                nav.appendChild(createNavBtn('◀ 前', page === 0, () => {
+                    overlay.remove(); showRecallModal(page - 1);
+                }));
+                nav.appendChild(createNavBtn('次 ▶', page >= totalPages - 1, () => {
+                    overlay.remove(); showRecallModal(page + 1);
+                }));
+                container.appendChild(nav);
+
+                // --- 3. 注意事項（デザイン・構造をブラッシュアップしたわ！） ---
+                const caution = document.createElement('div');
+                caution.style.cssText = `
+                    font-size: 0.8rem;
+                    color: #d7ccc8;
+                    margin: 0 auto 20px auto;
+                    text-align: left;
+                    width: 96%;
+                    line-height: 1.6;
+                    background: #2d1b18; /* パネルより一段深い背景色 */
+                    border: 1px solid #5d4037;
+                    border-left: 4px solid #ffcc80; /* 左側にアクセントの警告色 */
+                    padding: 12px 14px;
+                    border-radius: 8px;
+                    box-sizing: border-box;
+                `;
+
+                caution.innerHTML = `
+                    <div style="display: flex; align-items: center; color: #ffcc80; font-size: 0.9rem; font-weight: bold; margin-bottom: 6px;">
+                        <span class="material-icons" style="margin-right: 5px;">report_problem</span>
+                        CAUTION
+                    </div>
+                    <div style="padding-left: 2px;">
+                        ・履歴は１週間程度で消える可能性があります（保存期間は非公表）<br>
+                        ・アップデートにより、以前のメニューが読み込めなくなる場合があります<br>
+                        ・大切なメニューは、<span style="color: #ffcc80; font-weight: bold;">エクスポート</span>でバックアップを推奨します
+                    </div>
+                `;
+                container.appendChild(caution);
+
+                // 閉じるボタン
+                const closeBtn = document.createElement('button');
+                closeBtn.innerText = '閉じる';
+                closeBtn.style.cssText = `
+                    display: block;
+                    width: 160px;
+                    margin: 0 auto;
+                    padding: 10px;
+                    background: #5d4037;
+                    border: none;
+                    border-radius: 8px;
+                    color: #fff;
+                    cursor: pointer;
+                    font-weight: bold;
+                    transition: background 0.2s;
+                `;
+                closeBtn.onmouseover = () => closeBtn.style.background = '#6d4c41';
+                closeBtn.onmouseout = () => closeBtn.style.background = '#5d4037';
+                closeBtn.onclick = () => overlay.remove();
+                container.appendChild(closeBtn);
+
+                overlay.appendChild(container);
+                document.body.appendChild(overlay);
+
+                // エクスポート処理
+                container.querySelector('#exportHistory').onclick = () => {
+                    const dataStr = JSON.stringify(currentLocalHistory, null, 2);
+                    const blob = new Blob([dataStr,], { type: "application/json", });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.download = `meshi_history_${getFormattedDateTime()}.json`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                    showToast("データを書き出したわ。大切にしてね。", true);
+                };
+
+                // インポート処理
+                container.querySelector('#importHistory').onclick = () => {
+                    const input = document.createElement('input');
+                    input.type = 'file';
+                    input.accept = '.json';
+                    input.onchange = (e) => {
+                        const file = e.target.files[0];
+                        const reader = new FileReader();
+                        reader.onload = (re) => {
+                            try {
+                                const imported = JSON.parse(re.target.result);
+                                // 1. 今のローカルデータを取得（空なら空配列）
+                                const current = JSON.parse(localStorage.getItem('meshi_local_history') || '[]');
+
+                                // 2. 今のと新しいのを合体させて保存！
+                                localStorage.setItem('meshi_local_history', JSON.stringify([...current, ...imported,]));
+
+                                overlay.remove();
+                                showToast("思い出を統合したわ。リストを確認してね。", true);
+                                showRecallModal(0); // そのまま最新のリストを見せるわね
+                            } catch (err) {
+                                showToast("ファイルの形式が違うみたいよ？", false);
+                            }
+                        };
+                        reader.readAsText(file);
+                    };
+                    input.click();
+                };
+            });
+        };
+
+        /**
+         * 食材（テーマ）を持ち込んで、特注メニューをリクエストする
+         */
+        const bringInIngredients = () => {
+            const overlay = document.createElement('div');
+            overlay.style.cssText = `
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                background: rgba(0,0,0,0.7); z-index: 100000;
+                display: flex; align-items: center; justify-content: center;
+            `;
+
+            const panel = document.createElement('div');
+            panel.style.cssText = `
+                background: #4e342e; color: #fff9c4; padding: 24px;
+                border-radius: 16px; width: 90%; max-width: 400px;
+                border: 3px solid #ffcc80; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+                text-align: center; font-family: sans-serif;
+            `;
+
+            panel.innerHTML = `
+                <div style="font-weight: bold; margin-bottom: 15px; color: #ffcc80; font-size: 1.1rem;">
+                    👩🏻‍🍳 特注オーダー：食材・テーマを持ち込む
+                </div>
+                <input type="text" id="customThemeInput" placeholder="例：寿司、天ぷら、いちご祭り"
+                    style="width: 100%; padding: 12px; border-radius: 8px; border: 2px solid #795548;
+                    margin-bottom: 20px; font-size: 1rem; outline: none;
+                    background: #ffffff !important; color: #3e2723 !important;">
+                <div style="display: flex; gap: 10px;">
+                    <button id="orderBtn" style="flex: 1; padding: 12px; background: #cd853f;
+                        color: white; border: none; border-radius: 8px; font-weight: bold;
+                        cursor: pointer; box-shadow: 0 2px 0 #b14d00;">注文する</button>
+                    <button id="cancelOrderBtn" style="flex: 1; padding: 12px; background: transparent;
+                        color: #d7ccc8; border: 1px solid #6d4c41; border-radius: 8px;
+                        cursor: pointer;">やめる</button>
+                </div>
+            `;
+
+            document.body.appendChild(overlay);
+            overlay.appendChild(panel);
+
+            const input = panel.querySelector('#customThemeInput');
+
+            setTimeout(() => input.focus(), 10);
+
+            // 決定処理
+            const submit = async () => {
+                const val = input.value.trim();
+                if (val) {
+                    overlay.remove();
+                    await suggestChefMenu('bringIn', val);
+                } else {
+                    showToast("何か入力してくれないと作れないよ！", false);
+                }
+            };
+
+            panel.querySelector('#orderBtn').onclick = submit;
+            panel.querySelector('#cancelOrderBtn').onclick = () => overlay.remove();
+
+            input.onkeydown = (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    submit();
+                }
+                if (e.key === 'Escape') {
+                    overlay.remove();
+                }
+            };
+        };
 
         // ギャル文字ON/OFFボタンがクリックされた時
         galmojiToggleBtn.addEventListener('click', () => {
@@ -1849,7 +2245,7 @@
          * 全ての操作ボタンを無効化する
          */
         const disableAllButtons = () => {
-            const buttons = [generateBtn, todaySpecialBtn, seasonalSpecialBtn, trendSpecialBtn,];
+            const buttons = [generateBtn, recallMenuBtn, todaySpecialBtn, seasonalSpecialBtn, trendSpecialBtn, bringInBtn, ];
             buttons.forEach(btn => {
                 if (btn) {
                     btn.disabled = true;
@@ -1862,7 +2258,7 @@
          * 全ての操作ボタンを有効化する
          */
         const enableAllButtons = () => {
-            const buttons = [generateBtn, todaySpecialBtn, seasonalSpecialBtn, trendSpecialBtn,];
+            const buttons = [generateBtn, recallMenuBtn, todaySpecialBtn, seasonalSpecialBtn, trendSpecialBtn, bringInBtn, ];
             buttons.forEach(btn => {
                 if (btn) {
                     btn.disabled = false;
