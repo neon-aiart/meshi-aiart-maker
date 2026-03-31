@@ -183,7 +183,7 @@ An overview of the core prompt design and control logic of this application.
 
 ### v20.4 (UnReleased)  
 
-✅ 思い出すボタンを実装（Firestore版）  
+✅ 思い出すボタン（Firestore版）を実装  
 
 ### [v20.1](https://gemini.google.com/share/fa237f56bf25)  
 
