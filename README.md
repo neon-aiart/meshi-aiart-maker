@@ -60,7 +60,6 @@ share link last update: 2026-03-27 (0 days ago)
 
 **Old Version**:  
 v20.1 (2026-02-20) [https://gemini.google.com/share/fa237f56bf25](https://gemini.google.com/share/fa237f56bf25)  
-v20.0 (2026-02-19) [https://gemini.google.com/share/71ce1dcf42c4](https://gemini.google.com/share/71ce1dcf42c4)  
 
 ### ⚠️ 動作環境 / Environment & Benefits  
 
@@ -171,7 +170,7 @@ An overview of the core prompt design and control logic of this application.
 
 ### v20.6  
 
-- 思い出すボタン（外部連携版）を実装  
+✅ 思い出すボタン（外部連携版）を実装  
 
 ### [v20.5](https://gemini.google.com/share/365339576f14) (Current Release)  
 
@@ -187,7 +186,7 @@ An overview of the core prompt design and control logic of this application.
 ✅ テキスト応答Geminiモデルを `gemini-2.5-flash-preview-09-2025` に変更  
 ✅ 画像生成Imagenモデルを `imagen-4.0-generate-001` に変更  
 
-### [v20.0](https://gemini.google.com/share/71ce1dcf42c4) (UnReleased)  
+### v20.0 (UnReleased)  
 
 ☑️ 応急処置として `gemini-2.5-flash-preview-05-20` を `gemini-2.5-flash-image-preview` に変更  
 
