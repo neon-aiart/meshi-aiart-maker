@@ -548,7 +548,7 @@
 
     <script type="module">
         /* Copyright (c) 2025-2026 ねおん / Licensed under PolyForm Noncommercial 1.0.0 (https://polyformproject.org/licenses/noncommercial/1.0.0/) */
-        const APP_VERSION = '20.5';
+        const APP_VERSION = '20.6';
 
         // --- 定数とUI要素の取得 ---
         const API_KEY = ''; // APIキーはCanvas環境から提供されるので空のままでOK
@@ -624,7 +624,6 @@
         } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
 
         // 2. 環境変数とApp IDの取得
-        // コードが変わると __app_id が変わる仕様を逆手に取って、これを保存パスに組み込むわ
         const firebaseConfig = typeof window.__firebase_config !== 'undefined' ? JSON.parse(window.__firebase_config) : {};
         const initialAuthToken = typeof window.__initial_auth_token !== 'undefined' ? window.__initial_auth_token : '';
         const appId = typeof window.__app_id !== 'undefined' ? window.__app_id : 'meshi-aiart-maker';
@@ -666,7 +665,7 @@
         // 6. 認証状態の監視 & 履歴読み込みのトリガー
         onAuthStateChanged(window.auth, (user) => {
             if (user) {
-                window.userId = user.uid;
+                userId = user.uid;
                 if (userIdDisplay) {
                     userIdDisplay.textContent = user.uid;
                 }
@@ -678,34 +677,50 @@
                 }
 
                 // ログイン成功時に、パスを確定させるわ
-                // 付箋アプリの成功パターン： artifacts / {appId} / public / data / user_history / {userId}
                 window.historyDocPath = ['artifacts', appId, 'public', 'data', 'user_history', user.uid,];
             } else {
-                window.userId = null;
+                userId = null;
                 if (userIdDisplay) {
                     userIdDisplay.textContent = "認証中...";
                 }
             }
         });
 
-        // 7. ハイブリッド保存関数
-        window.saveToHistory = async (suggestions) => {
+        /**
+         * 7. ハイブリッド保存関数
+         * @param {Array} suggestions - 3品の配列
+         * @param {Object} options - { forceTimestamp: 表示用TS, originalTimestamp: 魂の刻印 }
+         */
+        window.saveToHistory = async (suggestions, options = {}) => {
             // 認証が終わっていなかったり、提案が空なら何もしないわ
-            if (!window.userId || !suggestions || suggestions.length === 0) {
+            if (!userId || !suggestions || suggestions.length === 0) {
                 return;
             }
+
+            // 表示上のタイムスタンプ（指定がなければ今）
+            const ts = options.forceTimestamp || Date.now();
+            const birth = options.originalTimestamp || ts;
 
             // 保存するデータ構造を整えるわ
             const newEntry = {
                 items: suggestions, // [ {food, background, source}, ... ] の配列
-                timestamp: Date.now(),
+                timestamp: ts,
+                // 魂の刻印があれば付与するわ。なければ timestamp と同じ扱いよ
+                originalTimestamp: birth,
             };
 
-            // --- A. LocalStorageへの保存 (コード変更時の保険) ---
+            // --- A. LocalStorageへの保存 ---
             try {
                 let localHistory = JSON.parse(localStorage.getItem('meshi_local_history') || '[]');
+
+                // 重複排除（同じ刻印のパッケージがあれば消してから先頭へ）
+                localHistory = localHistory.filter(e => {
+                    const eBirth = e.originalTimestamp || e.timestamp;
+                    return eBirth !== birth;
+                });
+
                 localHistory.unshift(newEntry);
-                // 30件くらいがちょうどいいわね
+                // 最大30件
                 localStorage.setItem('meshi_local_history', JSON.stringify(localHistory.slice(0, 30)));
             } catch (e) {
                 console.warn("LocalStorage保存失敗:", e);
@@ -713,26 +728,114 @@
 
             // --- B. Firestoreへの保存 (別端末・共有リンク用) ---
             try {
-                // 付箋アプリで成功した「安全なパス」を使うわよ
-                const docRef = window.firebase.doc(window.db, ...window.historyDocPath);
+                if (window.firebase) {
+                    const docRef = window.firebase.doc(window.db, ...window.historyDocPath);
 
-                // 最新のデータを取得
-                const docSnap = await window.firebase.getDoc(docRef);
-                let cloudMeals = docSnap.exists() ? docSnap.data().meals || [] : [];
+                    // 最新のデータを取得してマージするわ
+                    const docSnap = await window.firebase.getDoc(docRef);
+                    let cloudMeals = docSnap.exists() ? docSnap.data().meals || [] : [];
 
-                cloudMeals.unshift(newEntry);
+                    // クラウド側でも重複排除
+                    cloudMeals = cloudMeals.filter(e => {
+                        const eBirth = e.originalTimestamp || e.timestamp;
+                        return eBirth !== birth;
+                    });
 
-                await window.firebase.setDoc(docRef, {
-                    meals: cloudMeals.slice(0, 30),
-                    lastUpdated: window.firebase.serverTimestamp(),
-                }, { merge: true, });
+                    cloudMeals.unshift(newEntry);
 
-                // console.log("思い出、クラウドにも刻んでおいたわよ✨");
+                    await window.firebase.setDoc(docRef, {
+                        meals: cloudMeals.slice(0, 30), // 最大30件
+                        lastUpdated: window.firebase.serverTimestamp(),
+                    }, { merge: true, });
+                }
             } catch (e) {
-                // ここでエラーが出るなら、まだパスの権限が足りない可能性があるわ
                 console.error("Firestore保存失敗:", e);
             }
+
+            // --- C. Cloudflare R2 への保存 (POST版) ---
+            try {
+                // ペイロードを圧縮・エンコード
+                const payload = await compressAndEncode(JSON.stringify(newEntry));
+
+                // 簡易的な署名 (Signature)
+                const secret = "meshi-aiart-maker@neon-ai.art";
+                const signature = btoa(userId + (ts || '') + payload.slice(0, 16) + secret).slice(0, 16);
+
+                const isFetch = false; // クエリで送る
+                const syncUrl = `https://meshi-history.neon-aiillust.workers.dev/sync` +
+                                `?uid=${userId}&ts=${ts}&sig=${signature}&v=${APP_VERSION}`;
+
+                if (!isFetch) {
+                    const img = new Image();
+                    img.src = syncUrl + `&data=${payload}`;
+                    img.onload = img.onerror = () => img.remove();
+                } else {
+                    const response = await fetch(syncUrl, {
+                        method: 'POST',
+                        body: payload,
+                        mode: 'cors', // Worker側で Allow-Origin: * を設定しているからいけるはず
+                    });
+
+                    if (response.ok) {
+                        // console.log("R2へのPOST保存、大成功よ！");
+                    } else {
+                        console.warn("Workerが拒否したわ:", response.status);
+                    }
+                }
+            } catch (e) {
+                console.warn("外部連携の準備中にトラブル発生よ:", e);
+            }
         };
+
+        /**
+         * 🧊 圧縮して Base64 エンコード (送信用)
+         */
+        async function compressAndEncode(text) {
+            const stream = new Blob([text,]).stream().pipeThrough(new CompressionStream('deflate'));
+            const buffer = await new Response(stream).arrayBuffer();
+
+            // Uint8Array を 1文字ずつのバイナリ文字列に変換してから btoa
+            let binary = "";
+            const bytes = new Uint8Array(buffer);
+            for (let i = 0; i < bytes.byteLength; i++) {
+                binary += String.fromCharCode(bytes[i]);
+            }
+            return btoa(binary);
+        }
+
+        /**
+         * 🍲 Base64 デコードして解凍 (受信用)
+         */
+        async function decompressAndDecode(base64Text) {
+            if (!base64Text || typeof base64Text !== 'string') {
+                return null;
+            }
+
+            try {
+                const cleanText = base64Text.trim().replace(/^"|"$/g, '');
+                const binaryString = atob(cleanText);
+                const bytes = new Uint8Array(binaryString.length);
+                for (let i = 0; i < binaryString.length; i++) {
+                    bytes[i] = binaryString.charCodeAt(i);
+                }
+
+                // Blobから直接ストリームを作る
+                const blob = new Blob([bytes,]);
+                const ds = new DecompressionStream('deflate');
+                const decompressedStream = blob.stream().pipeThrough(ds);
+
+                // Response オブジェクトを使って、一気にテキスト化
+                const text = await new Response(decompressedStream).text();
+
+                if (!text) {
+                    return null;
+                }
+                return JSON.parse(text);
+            } catch (e) {
+                console.warn("解凍に失敗したけど、エラーは握りつぶして null を返すわね:", e.message);
+                return null;
+            }
+        }
 
         // スクロール監視：200px以上で表示
         window.addEventListener('scroll', () => {
@@ -1225,8 +1328,7 @@
 
         // ========= トーストメッセージを表示する関数 =========
         // @param {string} msg - 表示するメッセージ
-        // @param {boolean|null} isSuccess - 成功
-        // したかどうかのフラグ (nullの場合は探索中)
+        // @param {boolean|null} isSuccess - 成功したかどうかのフラグ (nullの場合は探索中)
         function showToast(msg, isSuccess) {
             const toastId = 'meshi-toast';
             console.log(`[TOAST] ${msg}`);
@@ -1761,24 +1863,24 @@
         };
 
         /**
-         * 思い出（履歴）を呼び出すモーダルを表示するコンパクト版（１ページ６項目）
+         * 📖 思い出（履歴）を呼び出す関数
          */
-        const showRecallModal = async (page = 0) => {
+        async function showRecallModal() {
             // 1. ユーザー認証チェック（Firestore利用に必須）
-            const currentUid = window.userId ||
-                (window.auth?.currentUser ? window.auth.currentUser.uid : null);
+            const currentUid = userId || (window.auth?.currentUser ? window.auth.currentUser.uid : null);
 
             if (!currentUid) {
                 showToast("認証中よ。少し待ってからやり直してね。", false);
                 return;
             }
 
-            let allItems = [];
-            let currentLocalHistory = [];
+            const WORKER_URL = "https://meshi-history.neon-aiillust.workers.dev";
+            const secret = "meshi-aiart-maker@neon-ai.art";
 
+            // 2. 保存データ取得
             try {
                 // A. LocalStorage から取得
-                currentLocalHistory = JSON.parse(localStorage.getItem('meshi_local_history') || '[]');
+                const localHistory = JSON.parse(localStorage.getItem('meshi_local_history') || '[]');
 
                 // B. Firestore から取得
                 let cloudData = [];
@@ -1788,54 +1890,197 @@
                     if (docSnap.exists()) {
                         cloudData = docSnap.data().meals || [];
                     }
-                } catch (err) {
-                    console.warn("クラウドデータの取得に失敗:", err);
+                } catch (e) {
+                    console.warn("Firestore fetch error", e);
                 }
 
-                // C. データの統合とフラット化（重複排除）
-                const map = new Map();
-                [...currentLocalHistory, ...cloudData,].forEach(entry => {
-                    const items = entry.items || [entry,];
-                    const ts = entry.timestamp || Date.now();
-                    items.forEach(item => {
-                        const key = `${item.food}_${ts}`;
-                        if (!map.has(key)) {
-                            map.set(key, { ...item, timestamp: ts, });
-                        }
-                    });
+                // --- C. Cloudflare R2 から取得 ---
+                let r2Data = [];
+                try {
+                    // 1. まずはファイルリストを取得
+                    const listTs = Date.now().toString();
+                    const listSig = btoa(currentUid + listTs + secret).slice(0, 16);
+                    const listRes = await fetch(`${WORKER_URL}/list?uid=${currentUid}&ts=${listTs}&sig=${listSig}&v=${APP_VERSION}`);
+
+                    if (listRes.ok) {
+                        const files = await listRes.json();
+                        // 2. 各ファイルの中身を Fetch (最新の数件に絞るのもアリよ)
+                        const results = await Promise.all(files.slice(-30).map(async (f) => {
+                            try {
+                                const getSig = btoa(currentUid + f.timestamp + secret).slice(0, 16);
+                                const res = await fetch(`${WORKER_URL}/get?uid=${currentUid}&ts=${f.timestamp}&sig=${getSig}&v=${APP_VERSION}`);
+
+                                if (!res.ok) {
+                                    return null;
+                                }
+
+                                const rawText = await res.text();
+
+                                if (rawText.startsWith('<!DOCTYPE') || rawText.startsWith('{')) {
+                                    return null;
+                                }
+
+                                const cleanBase64 = rawText
+                                    .trim()
+                                    .replace(/^"|"$/g, '')
+                                    .replace(/ /g, '+')    // スペースを + に戻す
+                                    .replace(/\s/g, '');   // 改行などを削除
+
+                                if (!cleanBase64) {
+                                    return null;
+                                }
+
+                                // console.log(`[Debug] TS: ${f.timestamp}, Length: ${rawText.length} CleanBase64: ${cleanBase64}`);
+
+                                // 個別の解凍でエラーが出ても、ここだけで catch するわ
+                                try {
+                                    return await decompressAndDecode(cleanBase64);
+                                } catch (decodeErr) {
+                                    console.error(`[解凍失敗] TS: ${f.timestamp}`, decodeErr);
+                                    return null;
+                                }
+                            } catch (fetchErr) {
+                                console.error(`[通信失敗] TS: ${f.timestamp}`, fetchErr);
+                                return null;
+                            }
+                        }));
+
+                        r2Data = results.filter(d => d !== null);
+                    }
+                } catch (e) {
+                    console.warn("R2 fetch error", e);
+                }
+
+                // --- D. データの統合と重複排除 ---
+                const allItems = deduplicateMenuData([...localHistory, ...cloudData, ...r2Data,]);
+                const finalHistory = allItems.slice(0, 30); // 常に最新30パッケージ
+
+                // 現在の「Firestore + LocalStorage」に存在しない originalTimestamp を持つ R2 データを探すわ
+                const currentBirths = new Set(
+                    [...localHistory, ...cloudData, ].map(e => e.originalTimestamp || e.timestamp)
+                );
+
+                // R2 にはあったけど、他にはなかった差分を特定
+                const missingFromCloud = r2Data.filter(pkg => {
+                    const birth = pkg.originalTimestamp || pkg.timestamp;
+                    return !currentBirths.has(birth);
                 });
 
-                allItems = Array.from(map.values()).sort((a, b) => b.timestamp - a.timestamp);
+                // もし「他にはないけど R2 にはある」データが見つかったら、自動で Firestore 等を更新！
+                if (missingFromCloud.length > 0) {
+                    // R2から来たデータは timestamp を上書きせずそのまま（順序維持）で同期
+                    await syncAllStorages(finalHistory, []);
+                    // ※ R2には既にあるデータだから、saveToHistory(newPackages) は空でいいわね
+                    console.log(`${missingFromCloud.length * 3}品のメニューをR2からFirestore/LSに復元したよ✨`);
+                } else {
+                    // 差分がなくても、LSのリセット対策でLSだけは更新しておくわ
+                    localStorage.setItem('meshi_local_history', JSON.stringify(finalHistory));
+                }
+
+                // 画面を描画
+                renderRecallUI(finalHistory);
             } catch (e) {
                 console.error("思い出の読み込みエラー:", e);
-                showToast("データが壊れているみたい...", false);
-                return;
+                showToast("思い出の復元に失敗したわ...", false);
             }
+        }
 
-            // 2. UI構築
+        /**
+         * 🍕 思い出すメニューのUI構築
+         * @param {Array} allPackages - 統合・整理済みの最新パッケージリスト
+         */
+        function renderRecallUI(allPackages) {
+            // 1. パッケージの配列を、料理単体の配列にフラット化する
+            const allItems = allPackages.flatMap(pkg => pkg.items || []);
+
             const itemsPerPage = 6;
             const totalPages = Math.max(1, Math.ceil(allItems.length / itemsPerPage)); // 最小でも1ページ
-            const displayItems = allItems.slice(page * itemsPerPage, (page + 1) * itemsPerPage);
 
-            return new Promise((resolve) => {
-                const overlay = document.createElement('div');
-                overlay.style.cssText = `
-                    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-                    background: rgba(0,0,0,0.75); z-index: 10000;
-                    display: flex; align-items: center; justify-content: center;
-                    font-family: sans-serif; backdrop-filter: blur(4px);
-                    box-sizing: border-box;
-                `;
+            // 外側の枠（オーバーレイ）を作成
+            const overlay = document.createElement('div');
+            overlay.style.cssText = `
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                background: rgba(0,0,0,0.75); z-index: 10000;
+                display: flex; align-items: center; justify-content: center;
+                font-family: sans-serif; backdrop-filter: blur(4px);
+                box-sizing: border-box;
+            `;
 
-                const container = document.createElement('div');
-                container.style.cssText = `
-                    background: #3e2723; color: #fff9c4; padding: 20px;
-                    border-radius: 16px; width: 90%; max-width: 500px;
-                    box-shadow: 0 12px 40px rgba(0,0,0,0.6); border: 1px solid #5d4037;
-                    box-sizing: border-box;
-                `;
+            const container = document.createElement('div');
+            container.style.cssText = `
+                background: #3e2723; color: #fff9c4; padding: 20px;
+                border-radius: 16px; width: 90%; max-width: 500px;
+                box-shadow: 0 12px 40px rgba(0,0,0,0.6); border: 1px solid #5d4037;
+                box-sizing: border-box;
+            `;
 
-                // ヘッダー（出力・入力ボタン込み）
+            overlay.appendChild(container);
+            document.body.appendChild(overlay);
+
+            // 中身を書き換えるためのコンテナ
+            const dynamicContent = document.createElement('div');
+            container.appendChild(dynamicContent);
+
+            // 注意事項
+            const caution = document.createElement('div');
+            caution.style.cssText = `
+                display: none; /* 非表示 */
+                font-size: 0.8rem;
+                color: #d7ccc8;
+                margin: 0 auto 10px auto;
+                text-align: left;
+                width: 96%;
+                line-height: 1.6;
+                background: #2d1b18; /* パネルより一段深い背景色 */
+                border: 1px solid #5d4037;
+                border-left: 4px solid #ffcc80; /* 左側にアクセントの警告色 */
+                padding: 12px 14px;
+                border-radius: 8px;
+                box-sizing: border-box;
+            `;
+
+            caution.innerHTML = `
+                <div style="display: flex; align-items: center; color: #ffcc80; font-size: 0.9rem; font-weight: bold; margin-bottom: 6px;">
+                    <span class="material-icons" style="margin-right: 5px;">report_problem</span>
+                    CAUTION
+                </div>
+                <div style="padding-left: 2px;">
+                    ・履歴は１週間程度で消える可能性があります（保存期間は非公表）<br>
+                    ・アップデートにより、以前のメニューが読み込めなくなる場合があります<br>
+                    ・大切なメニューは、<span style="color: #ffcc80; font-weight: bold;">エクスポート</span>でバックアップを推奨します（最大30品）
+                </div>
+            `;
+            container.appendChild(caution);
+
+            // 閉じるボタン
+            const closeBtn = document.createElement('button');
+            closeBtn.innerText = '閉じる';
+            closeBtn.style.cssText = `
+                display: block;
+                width: 160px;
+                margin: 0 auto;
+                padding: 10px;
+                background: #5d4037;
+                border: none;
+                border-radius: 8px;
+                color: #fff;
+                cursor: pointer;
+                font-weight: bold;
+                transition: background 0.2s;
+            `;
+            closeBtn.onmouseover = () => closeBtn.style.background = '#6d4c41';
+            closeBtn.onmouseout = () => closeBtn.style.background = '#5d4037';
+            closeBtn.onclick = () => overlay.remove();
+            container.appendChild(closeBtn);
+
+            // 🔄 ページ更新用関数
+            const updatePage = (page) => {
+                dynamicContent.innerHTML = ''; // 一旦クリア
+
+                // 2. フラット化した allItems から、そのページに表示する分を切り出す
+                const displayItems = allItems.slice(page * itemsPerPage, (page + 1) * itemsPerPage);
+
+                // A. ヘッダー（ページ数、エクスポート＆インポート）
                 const header = document.createElement('div');
                 header.style.cssText = `
                     display: flex; justify-content: space-between;
@@ -1848,9 +2093,9 @@
                         <button id="importHistory" style="background: #5d4037; border: 1px solid #795548; color: #d7ccc8; font-size: 0.8rem; cursor: pointer; padding: 2px 6px; border-radius: 4px; transition: background 0.2s;">インポート</button>
                     </div>
                 `;
-                container.appendChild(header);
+                dynamicContent.appendChild(header);
 
-                // ホバーイベントの設定（要素を取得してから当てるわね）
+                // ホバーイベントの設定
                 const exportBtn = header.querySelector('#exportHistory');
                 const importBtn = header.querySelector('#importHistory');
 
@@ -1859,7 +2104,15 @@
                     btn.onmouseout = () => btn.style.background = '#5d4037';  // 元の色に
                 });
 
-                // リスト表示
+                header.querySelector('#exportHistory').onclick = () => exportHistoryToFile(allPackages);
+                header.querySelector('#importHistory').onclick = () => {
+                    importHistoryFromFile(allPackages, () => {
+                        overlay.remove();
+                        showRecallModal(); // インポート後は最初からやり直し
+                    });
+                };
+
+                // B. リスト表示
                 const list = document.createElement('div');
                 list.style.cssText = `
                     display: grid;
@@ -1893,7 +2146,7 @@
 
                         btn.innerHTML = `
                             <div style="font-size: 0.85rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1;">
-                                ${item.food}
+                                ${item.food || '料理名なし'}
                             </div>
                             <div class="tooltip" style="margin-left: 5px; display: flex; align-items: center;">
                                 <span class="material-icons" style="font-size: 1rem; color: #ffcc80;">info</span>
@@ -1915,126 +2168,246 @@
                         list.appendChild(btn);
                     });
                 }
-                container.appendChild(list);
+                dynamicContent.appendChild(list);
 
-                // ナビゲーション
+                // C. ナビゲーション（前へ / 次へ）
                 const nav = document.createElement('div');
-                nav.style.cssText = 'display: flex; justify-content: center; gap: 20px; align-items: center; margin-bottom: 15px;';
+                nav.style.cssText = 'display: flex; justify-content: center; gap: 30px; align-items: center; margin: 10px 0 10px 0;';
 
                 const createNavBtn = (text, disabled, onClick) => {
                     const b = document.createElement('button');
                     b.innerText = text;
                     b.disabled = disabled;
-                    b.style.cssText = `background: transparent; border: none; color: ${disabled ? '#795548' : '#ffcc80'}; cursor: ${disabled ? 'default' : 'pointer'}; font-weight: bold;`;
-                    b.onclick = onClick;
+                    b.style.cssText = `background: transparent; border: none; color: ${disabled ? '#795548' : '#ffcc80'}; cursor: ${disabled ? 'default' : 'pointer'}; font-weight: bold; font-size: 1rem;`;
+                    if (!disabled) {
+                        b.onclick = onClick;
+                    }
                     return b;
                 };
 
-                nav.appendChild(createNavBtn('◀ 前', page === 0, () => {
-                    overlay.remove(); showRecallModal(page - 1);
-                }));
-                nav.appendChild(createNavBtn('次 ▶', page >= totalPages - 1, () => {
-                    overlay.remove(); showRecallModal(page + 1);
-                }));
-                container.appendChild(nav);
+                nav.appendChild(createNavBtn('◀ 前', page === 0, () => updatePage(page - 1)));
+                nav.appendChild(createNavBtn('次 ▶', page >= totalPages - 1, () => updatePage(page + 1)));
+                dynamicContent.appendChild(nav);
+            };
 
-                // --- 3. 注意事項（デザイン・構造をブラッシュアップしたわ！） ---
-                const caution = document.createElement('div');
-                caution.style.cssText = `
-                    font-size: 0.8rem;
-                    color: #d7ccc8;
-                    margin: 0 auto 20px auto;
-                    text-align: left;
-                    width: 96%;
-                    line-height: 1.6;
-                    background: #2d1b18; /* パネルより一段深い背景色 */
-                    border: 1px solid #5d4037;
-                    border-left: 4px solid #ffcc80; /* 左側にアクセントの警告色 */
-                    padding: 12px 14px;
-                    border-radius: 8px;
-                    box-sizing: border-box;
+            updatePage(0); // 最初のページを表示
+        }
+
+        // 💾 データを JSON ファイルとして書き出す
+        function exportHistoryToFile(historyData) {
+            try {
+                const dataStr = JSON.stringify(historyData, null, 2);
+                const blob = new Blob([dataStr, ], { type: "application/json", });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = `meshi_history_${getFormattedDateTime()}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+                showToast("メニューを書き出したわ。大切にしてね。", true);
+            } catch (e) {
+                console.error("Export failed:", e);
+                showToast("書き出しに失敗しちゃった...", false);
+            }
+        }
+
+        /**
+         * 📂 進化したインポート関数（引数で現在の履歴を受け取るわ）
+         * @param {Array} currentHistory - 現在表示・保持されている履歴配列
+         * @param {Function} callback - 完了後の処理
+         */
+        async function importHistoryFromFile(currentHistory, callback) {
+            // 中身がある時だけ確認。空なら即ファイル選択へ
+            if (currentHistory.length > 0) {
+                const ok = await customConfirm(
+                    "インポートしたメニューを追加するわね。<br>" +
+                    "合計が90品（30回分）を超えると、<br>" +
+                    "古いものから順に整理されるけど、いい？",
+                    "追加する"
+                );
+                if (!ok) {
+                    return;
+                }
+            }
+
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+
+            input.onchange = async (e) => {
+                const file = e.target.files[0];
+                if (!file) {
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = async (re) => {
+                    try {
+                        const imported = JSON.parse(re.target.result);
+                        if (!Array.isArray(imported)) {
+                            throw new Error("Format Error");
+                        }
+
+                        const now = Date.now();
+
+                        // 1. 重複排除して「整理されたインポート候補」を作る
+                        const deduplicatedImported = deduplicateMenuData(imported);
+
+                        // 2. 「現在の手元の履歴」にある originalTimestamp のリストを作る
+                        const existingBirths = new Set(
+                            currentHistory.map(e => e.originalTimestamp || e.timestamp)
+                        );
+
+                        // 3. すでに手元にあるものは除外して「本当に新しい（追加が必要な）分」だけ抽出
+                        const newPackages = deduplicatedImported.filter(pkg => {
+                            const birth = pkg.originalTimestamp || pkg.timestamp;
+                            return !existingBirths.has(birth);
+                        }).map((pkg, index) => {
+                            return {
+                                ...pkg,
+                                originalTimestamp: pkg.originalTimestamp || pkg.timestamp || now,
+                                timestamp: now - index, // R2の古い残骸に勝つために「今」にする
+                            };
+                        });
+
+                        // 4. もし新しいパッケージが一つもなければ、ここで終了！
+                        if (newPackages.length === 0) {
+                            showToast("今の履歴はすでに最新よ。インポートの必要はないわ✨", true);
+                            return;
+                        }
+
+                        // 5. 「既存のデータ」と「新しいデータ」を合体させて、最新30件を作る
+                        const mergedHistory = [...newPackages, ...currentHistory, ].slice(0, 30);
+
+                        // 一括同期
+                        await syncAllStorages(mergedHistory, newPackages);
+
+                        // パッケージ内の items の総数をカウントする書き方
+                        // const totalItemsCount = newPackages.reduce((sum, pkg) => sum + (pkg.items?.length || 0), 0);
+                        showToast(`${newPackages.length * 3}品のメニューを追加したよ✨`, true);
+                        if (callback) {
+                            callback();
+                        }
+                    } catch (err) {
+                        console.error("Import failed:", err);
+                        showToast("読み込み失敗。ファイルを確認してね。", false);
+                    }
+                };
+                reader.readAsText(file);
+            };
+
+            input.click();
+        }
+
+        /**
+         * メニューデータの重複を排除し、タイムスタンプ順にソートする
+         * @param {Array} rawItems - 統合前の全データ配列
+         * @returns {Array} - 重複排除＆ソート済みの配列
+         */
+        function deduplicateMenuData(rawItems) {
+            const map = new Map();
+
+            rawItems.forEach(entry => {
+                if (!entry || !entry.items) {
+                    return; // 3品セット(items)がないのは無視
+                }
+
+                // 1. 生成時の時間を特定（パッケージ全体の刻印）
+                const birthTime = entry.originalTimestamp || entry.timestamp || Date.now();
+
+                // 2. 「最初の料理名 + 生成時の時間」をキーにする
+                const representativeFood = entry.items[0]?.food || "unknown";
+                const key = `${representativeFood}_${birthTime}`;
+
+                // 3. 表示上のタイムスタンプを比較
+                const currentEntryTs = entry.timestamp || birthTime;
+
+                if (!map.has(key) || map.get(key).timestamp < currentEntryTs) {
+                    map.set(key, {
+                        ...entry,
+                        timestamp: currentEntryTs,
+                        originalTimestamp: birthTime,
+                    });
+                }
+            });
+
+            // タイムスタンプの降順（新しい順）で返すわ
+            return Array.from(map.values()).sort((a, b) => b.timestamp - a.timestamp);
+        }
+
+        /**
+         * 🔄 全ストレージ（LS/Firestore/R2）を一括更新・同期する関数
+         * @param {Array} finalHistory - 最新の全30パッケージ（マージ済み）
+         * @param {Array} newPackages - R2に送信する必要がある「未保存の新規分」のみ
+         */
+        async function syncAllStorages(finalHistory, newPackages = []) {
+            // A. LocalStorage 更新
+            localStorage.setItem('meshi_local_history', JSON.stringify(finalHistory));
+
+            // B. Firestore 更新
+            if (userId && window.firebase) {
+                try {
+                    const docRef = window.firebase.doc(window.db, ...window.historyDocPath);
+                    await window.firebase.setDoc(docRef, {
+                        meals: finalHistory,
+                        lastUpdated: window.firebase.serverTimestamp(),
+                    }, { merge: true, });
+                } catch (e) {
+                    console.warn("Firestore sync error", e);
+                }
+            }
+
+            // C. R2 更新（newPackages がある場合のみ、差分を飛ばす）
+            for (const pkg of newPackages) {
+                await window.saveToHistory(pkg.items, {
+                    forceTimestamp: pkg.timestamp,
+                    originalTimestamp: pkg.originalTimestamp,
+                });
+            }
+        }
+
+        /**
+         * ⚖️ Canvas内でも動くカスタム確認ダイアログ
+         * Promiseを返すから、await で confirm() みたいに使えるわよ。
+         */
+        function customConfirm(message, submit) {
+            return new Promise((resolve) => {
+                const overlay = document.createElement('div');
+                overlay.style.cssText = `
+                    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                    background: rgba(0,0,0,0.7); display: flex; align-items: center;
+                    justify-content: center; z-index: 10000; backdrop-filter: blur(4px);
                 `;
 
-                caution.innerHTML = `
-                    <div style="display: flex; align-items: center; color: #ffcc80; font-size: 0.9rem; font-weight: bold; margin-bottom: 6px;">
-                        <span class="material-icons" style="margin-right: 5px;">report_problem</span>
-                        CAUTION
+                const dialog = document.createElement('div');
+                dialog.style.cssText = `
+                    background: #222; color: #fff; padding: 20px; border-radius: 12px;
+                    border: 1px solid #444; width: 85%; max-width: 320px; text-align: center;
+                    box-shadow: 0 10px 25px rgba(0,0,0,0.5); font-size: 14px;
+                `;
+
+                dialog.innerHTML = `
+                    <p style="margin-bottom: 20px; line-height: 1.6;">${message}</p>
+                    <div style="display: flex; gap: 10px; justify-content: center;">
+                        <button id="confirm-cancel" style="background: #444; color: #ccc; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer;">キャンセル</button>
+                        <button id="confirm-ok" style="background: #007bff; color: #fff; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer;">${submit}</button>
                     </div>
-                    <div style="padding-left: 2px;">
-                        ・履歴は１週間程度で消える可能性があります（保存期間は非公表）<br>
-                        ・アップデートにより、以前のメニューが読み込めなくなる場合があります<br>
-                        ・大切なメニューは、<span style="color: #ffcc80; font-weight: bold;">エクスポート</span>でバックアップを推奨します
-                    </div>
                 `;
-                container.appendChild(caution);
 
-                // 閉じるボタン
-                const closeBtn = document.createElement('button');
-                closeBtn.innerText = '閉じる';
-                closeBtn.style.cssText = `
-                    display: block;
-                    width: 160px;
-                    margin: 0 auto;
-                    padding: 10px;
-                    background: #5d4037;
-                    border: none;
-                    border-radius: 8px;
-                    color: #fff;
-                    cursor: pointer;
-                    font-weight: bold;
-                    transition: background 0.2s;
-                `;
-                closeBtn.onmouseover = () => closeBtn.style.background = '#6d4c41';
-                closeBtn.onmouseout = () => closeBtn.style.background = '#5d4037';
-                closeBtn.onclick = () => overlay.remove();
-                container.appendChild(closeBtn);
-
-                overlay.appendChild(container);
+                overlay.appendChild(dialog);
                 document.body.appendChild(overlay);
 
-                // エクスポート処理
-                container.querySelector('#exportHistory').onclick = () => {
-                    const dataStr = JSON.stringify(currentLocalHistory, null, 2);
-                    const blob = new Blob([dataStr,], { type: "application/json", });
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement("a");
-                    a.href = url;
-                    a.download = `meshi_history_${getFormattedDateTime()}.json`;
-                    a.click();
-                    URL.revokeObjectURL(url);
-                    showToast("データを書き出したわ。大切にしてね。", true);
+                // イベント設定
+                overlay.querySelector('#confirm-ok').onclick = () => {
+                    document.body.removeChild(overlay);
+                    resolve(true);
                 };
-
-                // インポート処理
-                container.querySelector('#importHistory').onclick = () => {
-                    const input = document.createElement('input');
-                    input.type = 'file';
-                    input.accept = '.json';
-                    input.onchange = (e) => {
-                        const file = e.target.files[0];
-                        const reader = new FileReader();
-                        reader.onload = (re) => {
-                            try {
-                                const imported = JSON.parse(re.target.result);
-                                // 1. 今のローカルデータを取得（空なら空配列）
-                                const current = JSON.parse(localStorage.getItem('meshi_local_history') || '[]');
-
-                                // 2. 今のと新しいのを合体させて保存！
-                                localStorage.setItem('meshi_local_history', JSON.stringify([...current, ...imported,]));
-
-                                overlay.remove();
-                                showToast("思い出を統合したわ。リストを確認してね。", true);
-                                showRecallModal(0); // そのまま最新のリストを見せるわね
-                            } catch (err) {
-                                showToast("ファイルの形式が違うみたいよ？", false);
-                            }
-                        };
-                        reader.readAsText(file);
-                    };
-                    input.click();
+                overlay.querySelector('#confirm-cancel').onclick = () => {
+                    document.body.removeChild(overlay);
+                    resolve(false);
                 };
             });
-        };
+        }
 
         /**
          * 食材（テーマ）を持ち込んで、特注メニューをリクエストする
