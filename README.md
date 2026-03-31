@@ -27,8 +27,8 @@ Leveraging the AI models (**Imagen 4.0** & **Gemini 3 Flash**), it can generate 
         **Manual Choice**: Hand-pick the perfect dish for your current mood from the 3 suggestions.  
       * **おまかせ全自動**: チェックを入れれば、シェフが最高の一皿をランダムで選び、そのまま画像生成までノンストップで実行します  
         **Full Auto Mode**: Enable this to let the chef randomly pick the best dish and jump straight into image generation.  
-    * **メニューの備忘録（思い出す）**: 直近の提案を最大30品までFirestoreに自動保存、あとで「やっぱりあっち！」と選び直せます  
-      **Reminiscence (History)**: Automatically saves the last 30 dish suggestions. Recall and re-select your favorites anytime.  
+    * **メニューの備忘録（思い出す）**: 直近の提案を最大90品までFirestoreとCloudflare R2に自動保存、あとで「やっぱりあっち！」と選び直せます  
+      **Reminiscence (History)**: Automatically syncs and saves up to 90 recent dish suggestions to Firestore and Cloudflare R2 for reliable cross-session recall.  
       * **エクスポート＆インポート**: 大切なレシピはエクスポートでバックアップできます  
         **Export & Import**: Keep your precious recipes safe by exporting them as a backup file.  
     * **食材持ち込み**: 特定のテーマ（例：いちご、天ぷら）をシェフに伝えて、３つのアレンジメニューを提案してもらえます  
@@ -53,12 +53,14 @@ Leveraging the AI models (**Imagen 4.0** & **Gemini 3 Flash**), it can generate 
 以下のリンクから、Gemini Canvas環境で直接アプリをご利用ください。  
 Please use the app directly in the Gemini Canvas environment via the link below.  
 
-🍴 **[飯テロメーカーを試す / Try Meshi Art Maker](https://gemini.google.com/share/365339576f14)** 🍴  
+🍴 **[飯テロメーカーを試す / Try Meshi Art Maker](https://gemini.google.com/share/fe2207b2f8f0)** 🍴  
 <!-- STATUS_START -->
-share link last update: 2026-03-27 (0 days ago)  
+share link last update: 2026-03-31 (0 days ago)  
 <!-- STATUS_END -->
 
 **Old Version**:  
+v20.5 (2026-03-27) [https://gemini.google.com/share/365339576f14](https://gemini.google.com/share/365339576f14)  
+
 v20.1 (2026-02-20) [https://gemini.google.com/share/fa237f56bf25](https://gemini.google.com/share/fa237f56bf25)  
 
 ### ⚠️ 動作環境 / Environment & Benefits  
@@ -125,6 +127,7 @@ An overview of the core prompt design and control logic of this application.
 * **方言一括翻訳 (JSON制御)**: ４種の方言をJSONフォーマットで厳密に管理し、破綻のない一括変換を実現。  
   **Dialect Translation (JSON Control)**: Strictly manages four dialects via JSON format to achieve flawless batch conversion.  
 
+<!--
 > [!Caution]  
 >
 > 【シェフからの大切なお知らせ: 思い出す（Firestore版）について】  
@@ -140,6 +143,7 @@ An overview of the core prompt design and control logic of this application.
 > * The history retention period is unannounced (data may be cleared after about a week).  
 > * Previously saved menus may become unreadable due to system updates or structural changes.  
 > * We highly recommend using the "Export" feature to back up your precious recipes.  
+-->
 
 ---
 
@@ -168,9 +172,9 @@ An overview of the core prompt design and control logic of this application.
 
 ## 📝 更新履歴 (Changelog)  
 
-### v20.6  
+### [v20.6](https://gemini.google.com/share/fe2207b2f8f0)  
 
-✅ 思い出すボタン（外部連携版）を実装  
+✅ 思い出すボタン（Cloudflare R2版）を実装  
 
 ### [v20.5](https://gemini.google.com/share/365339576f14) (Current Release)  
 
