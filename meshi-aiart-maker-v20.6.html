@@ -2024,9 +2024,10 @@
             // 注意事項
             const caution = document.createElement('div');
             caution.style.cssText = `
+                display: none; /* 非表示 */
                 font-size: 0.8rem;
                 color: #d7ccc8;
-                margin: 0 auto 20px auto;
+                margin: 0 auto 10px auto;
                 text-align: left;
                 width: 96%;
                 line-height: 1.6;
@@ -2171,7 +2172,7 @@
 
                 // C. ナビゲーション（前へ / 次へ）
                 const nav = document.createElement('div');
-                nav.style.cssText = 'display: flex; justify-content: center; gap: 30px; align-items: center; margin-top: 10px;';
+                nav.style.cssText = 'display: flex; justify-content: center; gap: 30px; align-items: center; margin: 10px 0 10px 0;';
 
                 const createNavBtn = (text, disabled, onClick) => {
                     const b = document.createElement('button');
@@ -2221,7 +2222,8 @@
                 const ok = await customConfirm(
                     "インポートしたメニューを追加するわね。<br>" +
                     "合計が90品（30回分）を超えると、<br>" +
-                    "古いものから順に整理されるけど、いい？"
+                    "古いものから順に整理されるけど、いい？",
+                    "追加する"
                 );
                 if (!ok) {
                     return;
@@ -2368,7 +2370,7 @@
          * ⚖️ Canvas内でも動くカスタム確認ダイアログ
          * Promiseを返すから、await で confirm() みたいに使えるわよ。
          */
-        function customConfirm(message) {
+        function customConfirm(message, submit) {
             return new Promise((resolve) => {
                 const overlay = document.createElement('div');
                 overlay.style.cssText = `
@@ -2388,7 +2390,7 @@
                     <p style="margin-bottom: 20px; line-height: 1.6;">${message}</p>
                     <div style="display: flex; gap: 10px; justify-content: center;">
                         <button id="confirm-cancel" style="background: #444; color: #ccc; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer;">キャンセル</button>
-                        <button id="confirm-ok" style="background: #007bff; color: #fff; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer;">追加する</button>
+                        <button id="confirm-ok" style="background: #007bff; color: #fff; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer;">${submit}</button>
                     </div>
                 `;
 
