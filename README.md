@@ -27,8 +27,8 @@ Leveraging the AI models (**Imagen 4.0** & **Gemini 3 Flash**), it can generate 
         **Manual Choice**: Hand-pick the perfect dish for your current mood from the 3 suggestions.  
       * **おまかせ全自動**: チェックを入れれば、シェフが最高の一皿をランダムで選び、そのまま画像生成までノンストップで実行します  
         **Full Auto Mode**: Enable this to let the chef randomly pick the best dish and jump straight into image generation.  
-    * **メニューの備忘録（思い出す）**: 直近の提案を最大90品までFirestoreと**Cloudflare R2**に自動保存、あとで「やっぱりあっち！」と選び直せます  
-      **Reminiscence (History)**: Automatically syncs and saves up to 90 recent dish suggestions to Firestore and Cloudflare R2 for reliable cross-session recall.  
+    * **メニューの備忘録（思い出す）**: 直近の提案を**最大90品**までFirestoreと**Cloudflare R2**に自動保存、あとで「やっぱりあっち！」と選び直せます  
+      **Reminiscence (History)**: Automatically syncs and saves up to **90 recent dish suggestions** to Firestore and Cloudflare R2 for reliable cross-session recall.  
       * **エクスポート＆インポート**: 大切なレシピはエクスポートでバックアップできます  
         **Export & Import**: Keep your precious recipes safe by exporting them as a backup file.  
     * **食材持ち込み**: 特定のテーマ（例：いちご、天ぷら）をシェフに伝えて、３つのアレンジメニューを提案してもらえます  
@@ -174,6 +174,7 @@ An overview of the core prompt design and control logic of this application.
 ### [v20.6](https://gemini.google.com/share/fe2207b2f8f0) (Current Release)  
 
 ✅ 思い出すボタン（Cloudflare R2版）を実装  
+☑️ メニューの保存数を最大90品に変更  
 
 ### [v20.5](https://gemini.google.com/share/365339576f14)  
 
