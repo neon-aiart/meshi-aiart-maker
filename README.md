@@ -149,20 +149,20 @@ An overview of the core prompt design and control logic of this application.
 ### 📺 紹介動画 (Overview Video)  
 
 <p align="center"><a href="https://youtu.be/8zejiDRTeWk" markdown="1">
-    <img src="https://img.youtube.com/vi/8zejiDRTeWk/maxresdefault.jpg" alt="Meshi AIart Maker Overview" style="width:100%; max-width:600px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);"><br />
-    ▶️ クリックしてYouTubeで再生 (Click to play on YouTube)
+  <img src="https://img.youtube.com/vi/8zejiDRTeWk/maxresdefault.jpg" alt="Meshi AIart Maker Overview" style="width:100%; max-width:600px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);"><br />
+  ▶️ クリックしてYouTubeで再生 (Click to play on YouTube)
 </a></p>  
 
 ## 🎨 インフォグラフィック (Infographic)  
 
 <details><summary>
-    🇯🇵 日本語版を表示 (View Japanese Version)
+  🇯🇵 日本語版を表示 (View Japanese Version)
 </summary>
 <img src="meshi-aiart-maker-info-jp-v2.png" alt="Infographic JP" width="100%">
 </details>
 
 <details><summary>
-    🇺🇸 English Version (View English Version)
+  🇺🇸 English Version (View English Version)
 </summary>
 <img src="meshi-aiart-maker-info-en-v2.png" alt="Infographic EN" width="100%">
 </details>
@@ -318,7 +318,7 @@ Furthermore, we are actively submitting **Malware / Abuse Reports** to relevant 
 <pre>
 <img src="https://www.google.com/s2/favicons?domain=bsky.app&size=16" alt="Bluesky icon"> Bluesky       :<a href="https://bsky.app/profile/neon-ai.art/">https://bsky.app/profile/neon-ai.art/</a>
 <img src="https://www.google.com/s2/favicons?domain=github.com&size=16" alt="GitHub icon"> GitHub        :<a href="https://github.com/neon-aiart/">https://github.com/neon-aiart/</a>
-<img src="https://neon-aiart.github.io/favicon.ico" alt="neon-aiart icon" width="16" height="16"> GitHub Pages  :<a href="https://neon-aiart.github.io/">https://neon-aiart.github.io/</a>
+<img src="https://neon-aiart.github.io/favicon.ico" alt="neon-aiart icon" height="16"> GitHub Pages  :<a href="https://neon-aiart.github.io/">https://neon-aiart.github.io/</a>
 <img src="https://www.google.com/s2/favicons?domain=greasyfork.org&size=16" alt="Greasy Fork icon"> Greasy Fork   :<a href="https://greasyfork.org/ja/users/1494762/">https://greasyfork.org/ja/users/1494762/</a>
 <img src="https://www.google.com/s2/favicons?domain=zenn.dev&size=16" alt="Sizu icon"> Zenn Dev      :<a href="https://zenn.dev/neon_aiart/">https://zenn.dev/neon_aiart/</a>
 <img src="https://www.google.com/s2/favicons?domain=sizu.me&size=16" alt="Sizu icon"> Sizu Diary    :<a href="https://sizu.me/neon_aiart/">https://sizu.me/neon_aiart/</a>
