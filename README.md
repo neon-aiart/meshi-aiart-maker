@@ -55,7 +55,7 @@ Please use the app directly in the Gemini Canvas environment via the link below.
 
 🍴 **[飯テロメーカーを試す / Try Meshi Art Maker](https://gemini.google.com/share/fe2207b2f8f0)** 🍴  
 <!-- STATUS_START -->
-share link last update: 2026-03-31 (18 days ago)  
+share link last update: 2026-03-31 (19 days ago)  
 <!-- STATUS_END -->
 
 **Old Version**:  
