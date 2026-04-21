@@ -857,8 +857,9 @@
 
         // ウィンドウタイトルを同期
         setInterval(() => {
-            if (document.title && !document.title.includes("Gemini")) {
-                window.parent.postMessage({ type: 'SYNC_TITLE', title: document.title, }, '*');
+            const currentTitle = document.title.replace(/[\u200e\u200f\u202a-\u202e]/g, '').trim();
+            if (currentTitle !== '' && currentTitle !== "Gemini - Google AI に直接アクセス") {
+                window.parent.postMessage({ type: 'SYNC_TITLE', title: currentTitle, }, '*');
             }
         }, 2000);
 
