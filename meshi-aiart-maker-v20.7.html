@@ -548,7 +548,7 @@
 
     <script type="module">
         /* Copyright (c) 2025-2026 ねおん / Licensed under PolyForm Noncommercial 1.0.0 (https://polyformproject.org/licenses/noncommercial/1.0.0/) */
-        const APP_VERSION = '20.6';
+        const APP_VERSION = '20.7';
 
         // --- 定数とUI要素の取得 ---
         const API_KEY = ''; // APIキーはCanvas環境から提供されるので空のままでOK
@@ -854,6 +854,13 @@
         scrollToTopBtn.addEventListener('click', () => {
             window.scrollTo({ top: 0, behavior: 'smooth', });
         });
+
+        // ウィンドウタイトルを同期
+        setInterval(() => {
+            if (document.title && !document.title.includes("Gemini")) {
+                window.parent.postMessage({ type: 'SYNC_TITLE', title: document.title, }, '*');
+            }
+        }, 2000);
 
         // 各ボタンの設定
         kansaiToggleBtn.addEventListener('click', () => handleDialectClick('関西弁', kansaiToggleBtn, 'text-emerald-400'));
@@ -1680,18 +1687,24 @@
 
             const systemPrompt = 'あなたはトレンドに敏感な凄腕シェフ兼、食のキュレーターです。提示されたテーマに最適な料理を提案してください。';
             const userPrompt = `テーマ: ${typeContext}
-                上記テーマに合うう「料理名」と、その料理が最も美味しそうに見える「背景やシチュエーション」を方向性の異なる【3種類】提案してください。
-                3つとも似たような食材にならないように、食材のバリエーションを散らして
-                1つは王道、1つは少し意外なもの、1つはシェフの遊び心が詰まったものにしてください。
-                3つとも同じような由来にならないように、由来のバリエーションを散らして
-                1つは注目度が高いもの、1つは意外なもの、1つはシェフの気まぐれに選んだものにしてください。
-                由来には、${type === 'bringIn' ? `冒頭に「食材持ち込み：${bringInTheme}」と明記し、` : ''}そのメニューを選んだ根拠を簡潔に記載してください。
+                上記テーマに合う「料理名」と、その料理の【具体的な盛り付け・外見描写】および【背景やシチュエーション】を、方向性の異なる【3種類】で提案してください。
+
+                ■盛り付け・外見描写のポイント:
+                「その料理が最も美しく見える状態」を具体的に描写してください。
+                食材の表面の質感（こんがりとした焼き目、しっとりした艶、瑞々しい断面、あるいはふわふわした粉糖など）、器とのコントラスト、盛り付けの高さや立体感、添えられたトッピングの色彩などを含めてください。
+                ※スイーツ、和食、洋食など、どんなジャンルでも不自然にならない「美味しそうな見た目」のディテールを追求すること。
+
+                ■構成のルール:
+                - 3つとも似た食材・由来にならないようバリエーションを散らすこと。
+                - 1つは王道、1つは少し意外なもの、1つはシェフの遊び心が詰まったものにすること。
+                - 由来には、${type === 'bringIn' ? `冒頭に「食材持ち込み：${bringInTheme}」と明記し、` : ''}メニューを選んだ根拠を簡潔に記載してください。
 
                 出力は必ず以下のJSONフォーマット（配列）のみで行ってください。
+                「background」フィールドには、料理自体の外見描写と背景シチュエーションを組み合わせて記載してください。
                 [
-                    {"food": "料理名1", "background": "背景1", "source": "由来1"},
-                    {"food": "料理名2", "background": "背景2", "source": "由来2"},
-                    {"food": "料理名3", "background": "背景3", "source": "由来3"}
+                    {"food": "料理名1", "background": "料理の外見と背景1", "source": "由来1"},
+                    {"food": "料理名2", "background": "料理の外見と背景2", "source": "由来2"},
+                    {"food": "料理名3", "background": "料理の外見と背景3", "source": "由来3"}
                 ]`;
 
             const payload = {
