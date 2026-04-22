@@ -398,7 +398,6 @@
                     🍄 食材持ち込み
                 </button>
             </div>
-
         </div>
 
         <!-- ロード中のアニメーション -->
@@ -408,7 +407,7 @@
                 <span class="text-2xl">🍝</span>
                 <span class="text-2xl">🥞</span>
             </div>
-            <p class="mt-4 text-gray-400">画像を生成中だよ...少し待っててね。</p>
+            <p id="loadingMessage" class="mt-4 text-gray-400">画像を生成中だよ... 少し待っててね。</p>
         </div>
 
         <!-- 生成された画像を表示するグリッド -->
@@ -548,7 +547,7 @@
 
     <script type="module">
         /* Copyright (c) 2025-2026 ねおん / Licensed under PolyForm Noncommercial 1.0.0 (https://polyformproject.org/licenses/noncommercial/1.0.0/) */
-        const APP_VERSION = '20.7';
+        const APP_VERSION = '20.8';
 
         // --- 定数とUI要素の取得 ---
         const API_KEY = ''; // APIキーはCanvas環境から提供されるので空のままでOK
@@ -577,6 +576,7 @@
         const promptInput = document.getElementById('promptInput');
         const backgroundInput = document.getElementById('backgroundInput');
         const loadingIndicator = document.getElementById('loadingIndicator');
+        const loadingMessage = document.getElementById('loadingMessage');
         const imageGrid = document.getElementById('imageGrid');
         const userIdDisplay = document.getElementById('userIdDisplay');
         const additionalContent = document.getElementById('additionalContent');
@@ -1018,7 +1018,7 @@
          * @param {string} prompt - ユーザーが入力したプロンプト（料理名など）
          */
         const generateImages = async (prompt) => {
-            setGeneratingUIState(true); // ボタンを無効化し、ローディング表示を開始
+            setGeneratingUIState(true, '画像を生成中'); // ボタンを無効化し、ローディング表示を開始
             currentImagePrompt = null;  // 前回のプロンプトをリセット
             let success = false;        // 生成が成功したかどうかのフラグ
 
@@ -1087,7 +1087,7 @@
                 imageGrid.innerHTML = `<p class="text-red-400 text-center col-span-full py-4 text-sm">${errorMessage}</p>`;
             } finally {
                 // ローディング表示を終了し、ボタンを再度有効化
-                setGeneratingUIState(false);
+                setGeneratingUIState(false, '');
                 // 成功した場合のみ、食レポなどの追加機能を表示
                 if (success) {
                     additionalContent.classList.remove('hidden');
@@ -1636,8 +1636,9 @@
         /**
          * 生成開始時のUI状態をセットアップする
          * @param {boolean} isLoading - 生成中か
+         * @param {string} message - 表示するメッセージ
          */
-        const setGeneratingUIState = (isLoading) => {
+        const setGeneratingUIState = (isLoading, message= '') => {
             const buttons = [generateBtn, recallMenuBtn, todaySpecialBtn, seasonalSpecialBtn, trendSpecialBtn, bringInBtn, ];
             buttons.forEach(btn => {
                 if (btn) {
@@ -1645,6 +1646,10 @@
                 }
             });
             if (isLoading) {
+                // メッセージを書き換える
+                if (loadingMessage) {
+                    loadingMessage.textContent = `${message}だよ... 少し待っててね。`;
+                }
                 // 生成開始時：インジケーター表示、古いコンテンツを隠す
                 imageGrid.innerHTML = '';
                 loadingIndicator.classList.remove('hidden');
@@ -1667,7 +1672,7 @@
             if (generateBtn.disabled) {
                 return;
             }
-            setGeneratingUIState(true); // UIの初期化とボタン無効化
+            setGeneratingUIState(true, 'メニュー考え中'); // UIの初期化とボタン無効化
 
             // 現在の日付情報を取得（2026年想定）
             const now = new Date();
@@ -1855,7 +1860,7 @@
 
                 if (selected === 'rethink') {
                     // 「考え直す」場合はもう一度自分を呼ぶ
-                    setGeneratingUIState(false);
+                    setGeneratingUIState(false, '');
                     return suggestChefMenu(type);
                 } else if (selected) {
                     // 選択された内容をセットして画像生成へ
@@ -1865,13 +1870,12 @@
                     await generateImages(selected.food);
                 } else {
                     // キャンセル
-                    setGeneratingUIState(false);
+                    setGeneratingUIState(false, '');
                 }
-
             } catch (error) {
                 console.error('提案エラー:', error);
                 showToast('シェフが仕込み中みたい。もう一度試してね！', false);
-                setGeneratingUIState(false);
+                setGeneratingUIState(false, '');
             }
         };
 

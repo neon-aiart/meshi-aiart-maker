@@ -1,4 +1,4 @@
-# 🍽️ 飯テロメーカー (Meshi Aiart Maker) v20.7  
+# 🍽️ 飯テロメーカー (Meshi Aiart Maker) v20.8  
 
 <img src="https://raw.githubusercontent.com/neon-aiart/meshi-art-maker/main/meshi_maker_20251101_235534.png" style="height: 200px; width: 200px; object-fit: contain;" align="right" alt="thumbnail" />
 
@@ -55,13 +55,13 @@ Please use the app directly in the Gemini Canvas environment via the link below.
 
 🍴 **[飯テロメーカーを試す / Try Meshi Art Maker](https://gemini.google.com/share/aac570cf265b)** 🍴  
 <!-- STATUS_START -->
-share link last update: 2026-04-21 (1 day ago)  
+share link last update: 2026-04-23 (0 days ago)  
 <!-- STATUS_END -->
 
 **Old Version**:  
+v20.7 (2026-04-21) [https://gemini.google.com/share/aac570cf265b](https://gemini.google.com/share/aac570cf265b)  
 v20.6 (2026-03-31) [https://gemini.google.com/share/fe2207b2f8f0](https://gemini.google.com/share/fe2207b2f8f0)  
 v20.5 (2026-03-27) [https://gemini.google.com/share/365339576f14](https://gemini.google.com/share/365339576f14)  
-v20.1 (2026-02-20) [https://gemini.google.com/share/fa237f56bf25](https://gemini.google.com/share/fa237f56bf25)  
 
 ### ⚠️ 動作環境 / Environment & Benefits  
 
@@ -171,6 +171,10 @@ An overview of the core prompt design and control logic of this application.
 ---
 
 ## 📝 更新履歴 (Changelog)  
+
+### [v20.8](https://gemini.google.com/share/df70bb810998) (UnReleased)  
+
+☑️ 気まぐれメニューの考え中のときのローディングメッセージ切り替え  
 
 ### [v20.7](https://gemini.google.com/share/aac570cf265b) (Current Release)  
 
