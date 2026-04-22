@@ -172,7 +172,7 @@ An overview of the core prompt design and control logic of this application.
 
 ## 📝 更新履歴 (Changelog)  
 
-### [v20.8](https://gemini.google.com/share/df70bb810998) (UnReleased)  
+### [v20.8](https://gemini.google.com/share/4bbb0d00b8f2) (UnReleased)  
 
 ☑️ 気まぐれメニューの考え中のときのローディングメッセージ切り替え  
 
