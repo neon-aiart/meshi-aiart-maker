@@ -156,21 +156,23 @@ An overview of the core prompt design and control logic of this application.
 
 ## 🎨 インフォグラフィック (Infographic)  
 
-<details><summary>
-  🇯🇵 日本語版を表示 (View Japanese Version)
-</summary>
-<img src="meshi-aiart-maker-info-jp-v2.png" alt="Infographic JP" width="100%">
-</details>
+<img src="https://info-pick.neon-aiillust.workers.dev/meshi-aiart-maker" alt="infographic" width="100%">
 
 <details><summary>
-  🇺🇸 English Version (View English Version)
+    🌐 Other Language Version
 </summary>
-<img src="meshi-aiart-maker-info-en-v2.png" alt="Infographic EN" width="100%">
+<img src="https://info-pick.neon-aiillust.workers.dev/meshi-aiart-maker?details" alt="infographic details" width="100%">
 </details>
 
 ---
 
 ## 📝 更新履歴 (Changelog)  
+
+### v20.9 and later (Upcoming Tasks)  
+
+* [ ] 食レポに`仕事柄`など個人的な情報を入れない  
+
+Work in Progress...  
 
 ### [v20.8](https://gemini.google.com/share/4bbb0d00b8f2) (UnReleased)  
 
