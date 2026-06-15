@@ -164,7 +164,7 @@ An overview of the core prompt design and control logic of this application.
 <img src="https://info-pick.neon-aiillust.workers.dev/meshi-aiart-maker?details" alt="infographic details" width="100%">
 </details>
 
-[🔄 キャッシュを更新する](https://info-pick.neon-aiillust.workers.dev/meshi-aiart-maker/purge-and-close)
+[🔄 キャッシュを更新する](https://info-pick.neon-aiillust.workers.dev/youtube-community-exact-date-time/purge-and-close)
 
 ---
 
