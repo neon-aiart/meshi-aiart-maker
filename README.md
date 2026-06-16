@@ -156,15 +156,15 @@ An overview of the core prompt design and control logic of this application.
 
 ## 🎨 インフォグラフィック (Infographic)  
 
-<img src="https://info-pick.neon-aiillust.workers.dev/meshi-aiart-maker" alt="infographic" width="100%">
+<a href="https://info-pick.neon-aiillust.workers.dev/meshi-aiart-maker/purge-and-close" target="_blank" rel="noopener noreferrer">
+  <img src="https://info-pick.neon-aiillust.workers.dev/meshi-aiart-maker" alt="infographic" width="100%">
+</a>
 
 <details><summary>
-    🌐 Other Language Version
+  🌐 Other Language Version
 </summary>
 <img src="https://info-pick.neon-aiillust.workers.dev/meshi-aiart-maker?details" alt="infographic details" width="100%">
 </details>
-
-<!-- [🔄 キャッシュを更新する](https://info-pick.neon-aiillust.workers.dev/meshi-aiart-maker/purge-and-close) -->
 
 ---
 
