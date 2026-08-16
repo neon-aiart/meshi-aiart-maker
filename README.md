@@ -1,6 +1,6 @@
 # 🍽️ 飯テロメーカー (Meshi Aiart Maker) v20.8  
 
-<img src="https://raw.githubusercontent.com/neon-aiart/meshi-art-maker/main/meshi_maker_20251101_235534.png" style="height: 200px; width: 200px; object-fit: contain;" align="right" alt="thumbnail" />
+<img src="./assets/meshi_maker_20251101_235534.png" style="height: 200px; width: 200px; object-fit: contain;" align="right" alt="thumbnail" />
 
 このアプリケーションは、**GoogleのGemini Canvas環境**専用の、究極の「飯テロ」画像生成補助アプリです。  
 AIモデル（**Imagen 4.0** & **Gemini 3 Flash**）を駆使し、見る者の食欲を限界まで刺激する高品質な料理イラストに加え、臨場感あふれる食レポや献立アイデアを生成できます。  
