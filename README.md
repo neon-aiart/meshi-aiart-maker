@@ -14,6 +14,20 @@ Leveraging the AI models (**Imagen 4.0** & **Gemini 3 Flash**), it can generate 
 
 ---
 
+## 🎨 インフォグラフィック (Infographic)  
+
+<img src="https://info-pick.neon-aiillust.workers.dev/meshi-aiart-maker" alt="infographic" width="100%">
+
+<details><summary>
+  🌐 Other Language Version
+</summary>
+<img src="https://info-pick.neon-aiillust.workers.dev/meshi-aiart-maker?details" alt="infographic details" width="100%">
+</details>
+
+<!-- <a href="https://info-pick.neon-aiillust.workers.dev/meshi-aiart-maker/purge-and-close" target="_blank" rel="noopener noreferrer">🗑️ Camo Purge</a> -->
+
+---
+
 ## 🎀 機能紹介 / Features  
 
 1. 💎 **Imagen 4.0 最適化プロンプト生成 / Imagen 4.0 Optimized Prompting**:  
@@ -153,18 +167,6 @@ An overview of the core prompt design and control logic of this application.
   <img src="https://img.youtube.com/vi/8zejiDRTeWk/maxresdefault.jpg" alt="Meshi AIart Maker Overview" style="width:100%; max-width:600px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);"><br />
   ▶️ クリックしてYouTubeで再生 (Click to play on YouTube)
 </a></p>  
-
-## 🎨 インフォグラフィック (Infographic)  
-
-<img src="https://info-pick.neon-aiillust.workers.dev/meshi-aiart-maker" alt="infographic" width="100%">
-
-<details><summary>
-  🌐 Other Language Version
-</summary>
-<img src="https://info-pick.neon-aiillust.workers.dev/meshi-aiart-maker?details" alt="infographic details" width="100%">
-</details>
-
-<!-- <a href="https://info-pick.neon-aiillust.workers.dev/meshi-aiart-maker/purge-and-close" target="_blank" rel="noopener noreferrer">🗑️ Camo Purge</a> -->
 
 ---
 
